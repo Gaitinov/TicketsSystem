@@ -72,6 +72,20 @@ class authController {
         const token = generateJwt(req.user.id, req.user.role)
         return res.json({token})
     }
+
+    async getUserInfo(req, res) {
+        try {
+          const user = await User.findOne({ _id: req.user.id });
+          if (!user) {
+            return res.status(404).json({ message: `Пользователь не найден` });
+          }
+          res.json({ message: "Информация о пользователе получена", username: user.username });
+        } catch (e) {
+          console.log(e);
+          res.status(403).json({ message: "Пользователь не авторизован" });
+        }
+      }
+      
 }
 
 module.exports = new authController()

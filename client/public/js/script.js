@@ -271,3 +271,33 @@ document.querySelector('#registerButton').addEventListener('click', function () 
   $('#navbarNav').collapse('toggle');
   $('#registerModal').modal('show');
 });
+
+
+// Вывод токена в консоль
+
+window.addEventListener('DOMContentLoaded', async () => {
+  const token = localStorage.getItem('token');
+
+  if (token) {
+    try {
+      const response = await fetch('/auth/userinfo', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Имя пользователя:', data.username);
+      } else {
+        console.error('Ошибка получения информации о пользователе');
+      }
+    } catch (error) {
+      console.error('Ошибка при проверке токена:', error);
+    }
+  } else {
+    console.log('Токен не найден');
+  }
+});
