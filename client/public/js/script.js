@@ -39,47 +39,6 @@ submitButton.addEventListener('click', event => {
 });
 
 
-// const loginButton = document.querySelector('#loginButton1');
-// loginButton.addEventListener('click', async (e) => {
-//   e.preventDefault();
-
-//   const username = document.querySelector('#loginUsername').value;
-//   const password = document.querySelector('#loginPassword').value;
-//   const rememberMe = document.querySelector('#loginRememberMe').checked;
-
-//   const response = await fetch('/auth/login', {
-//     method: 'POST',
-//     headers: {
-//       'Content-Type': 'application/json'
-//     },
-//     body: JSON.stringify({ username, password })
-//   });
-
-//   const data = await response.json();
-//   console.log(data);
-// });
-
-// const registorButton = document.querySelector('#registorButton1');
-// registorButton.addEventListener('click', async (e) => {
-//   e.preventDefault();
-
-//   const username = document.querySelector('#registerUsername').value;
-//   const email = document.querySelector('#registerEmail').value;
-//   const password = document.querySelector('#registerPassword').value;
-
-//   const response = await fetch('/auth/registration', {
-//     method: 'POST',
-//     headers: {
-//       'Content-Type': 'application/json'
-//     },
-//     body: JSON.stringify({ username, email, password })
-//   });
-
-//   const data = await response.json();
-//   console.log(data);
-// });
-
-
 
 
 document.querySelector('#loginButton1').addEventListener('click', async function (event) {
@@ -126,7 +85,6 @@ document.querySelector('#loginButton1').addEventListener('click', async function
         console.log(token);
         location.reload();
       } else {
-        // Обработайте ситуацию, когда пользователь не найден
         console.error('Пользователь не найден');
       }
     } catch (error) {
