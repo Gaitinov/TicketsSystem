@@ -91,7 +91,7 @@ document.querySelector('#loginButton1').addEventListener('click', async function
       console.error(error);
     }
   }
-  });
+});
 
 
 
@@ -226,16 +226,35 @@ window.onload = function () {
     loginButton.style.display = 'none';
     const registerButton = document.querySelector(`a[data-target='#registerModal']`);
     registerButton.style.display = 'none';
+    const loginButtonTelephone = document.querySelector(`a[data-target='#loginModalTelephone']`);
+    loginButtonTelephone.style.display = 'none';
+    const registerButtonTelephone = document.querySelector(`a[data-target='#registerModalTelephone']`);
+    registerButtonTelephone.style.display = 'none';
     const logoutButton = document.querySelector(`a[data-target='#logout']`);
     logoutButton.classList.remove('d-none');
+    const logoutButtonTelephone = document.querySelector(`a[data-target='#logouttelephone']`);
+    logoutButtonTelephone.classList.remove('d-none');
+    const nickname = document.querySelector(`a[data-target='#nickname']`);
+    nickname.classList.remove('d-none');
+    const nicknameTelephone = document.querySelector(`a[data-target='#nicknameTelephone']`);
+    nicknameTelephone.classList.remove('d-none');
   }
 };
+
 
 const logoutButton = document.querySelector(`a[data-target='#logout']`);
 logoutButton.addEventListener('click', function () {
   localStorage.removeItem('token');
   location.reload();
 });
+
+const logoutButtonTelephone = document.querySelector(`a[data-target='#logouttelephone']`);
+logoutButtonTelephone.addEventListener('click', function () {
+  localStorage.removeItem('token');
+  location.reload();
+});
+
+
 
 var content = '<div class="alert alert-primary alert-xs" role="alert"><h4 class="alert-heading">Notification Title</h4><p>Date: January 7, 2023</p></div>\
 <div class="card bg-light text-black mb-3"><div class="card-header">Notification Title</div><div class="card-body"><p class="card-text">Date: January 7, 2023</p></div></div>\
@@ -291,6 +310,14 @@ window.addEventListener('DOMContentLoaded', async () => {
       if (response.ok) {
         const data = await response.json();
         console.log('Имя пользователя:', data.username);
+
+        const userNicknameElement = document.getElementById('userNickname');
+        userNicknameElement.textContent = data.username;
+
+        const userNicknameElementTelephone = document.getElementById('userNicknameTelephone');
+        userNicknameElementTelephone.textContent = data.username;
+
+
       } else {
         console.error('Ошибка получения информации о пользователе');
       }
