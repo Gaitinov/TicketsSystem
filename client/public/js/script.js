@@ -142,7 +142,7 @@ document.querySelector('#registorButton1').addEventListener('click', async funct
     });
 
     const data = await response.json();
-    console.log(data);
+    location.reload();
   }
 });
 
@@ -339,6 +339,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
       if (response.ok) {
         const data = await response.json();
+        let html = '';
         data.data.forEach(item => {
           console.log('_id:', item._id);
           console.log('title:', item.title);
@@ -346,9 +347,34 @@ window.addEventListener('DOMContentLoaded', async () => {
           console.log('date:', item.date);
           console.log('answers:', item.answers);
           console.log('--------------------');
+
+          html += `
+                <div class="card mb-0">
+                  <div class="card-body d-flex">
+                    <div class="col-md-8">
+                      <a href="/page">
+                        <h5 class="card-title">
+                          ${item.title} <small class="text-muted">(${item.answers} answers)</small>
+                        </h5>
+                      </a>
+                      <h6 class="card-subtitle mb-2 text-muted">Author: ${item.author}</h6>
+                      <p class="card-text"><small class="text-muted">Date: ${item.date}</small></p>
+                    </div>
+                    <div id="themediv" class="card-body">
+                      <img class="imagesized d-block mx-auto" src="img/loced.png" alt="Centered image">
+                    </div>
+                  </div>
+                </div>
+              `;
         });
 
-        
+        console.log(html);
+        document.getElementById('my-container').innerHTML = html;
+
+
+
+
+
       } else {
         console.error('Ошибка получения данных пользователя');
       }

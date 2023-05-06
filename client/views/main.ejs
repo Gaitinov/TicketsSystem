@@ -15,47 +15,50 @@
 <div class="container-fluid p-0 mt-4 d-flex justify-content-center">
     <div class="col-md-8">
 
+        <div id="my-container">
+        </div>
 
-        <% for(var i=0; i<data.length; i++) { %>
-            <div class="card mb-0">
-                <div class="card-body d-flex">
-                    <div class="col-md-8">
-                        <a href="/page">
-                            <h5 class="card-title">
-                                <%= data[i].title %> <small class="text-muted">(<%= data[i].answers %> answers)</small>
-                            </h5>
-                        </a>
-                        <h6 class="card-subtitle mb-2 text-muted">Author: <%= data[i].author %>
-                        </h6>
-                        <p class="card-text"><small class="text-muted">Date: <%= data[i].date %></small></p>
-                    </div>
-                    <div id="themediv" class="card-body">
-                        <img class="imagesized d-block mx-auto" src="img/loced.png" alt="Centered image">
-                    </div>
-                </div>
+
+
+        <form class="pt-2">
+            <div class="form-group">
+                <label for="name">Имя</label>
+                <input type="text" class="form-control" id="name" placeholder="Введите ваше имя">
             </div>
-            <% } %>
-
-
-
-                <form class="pt-2">
-                    <div class="form-group">
-                        <label for="name">Имя</label>
-                        <input type="text" class="form-control" id="name" placeholder="Введите ваше имя">
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Почта</label>
-                        <input type="email" class="form-control" id="email" placeholder="Введите вашу почту">
-                    </div>
-                    <div class="form-group">
-                        <label for="subject">Тема</label>
-                        <input type="text" class="form-control" id="subject" placeholder="Введите тему">
-                    </div>
-                    <div class="form-group">
-                        <div id="summernote"></div>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Отправить</button>
-                </form>
+            <div class="form-group">
+                <label for="email">Почта</label>
+                <input type="email" class="form-control" id="email" placeholder="Введите вашу почту">
+            </div>
+            <div class="form-group">
+                <label for="subject">Тема</label>
+                <input type="text" class="form-control" id="subject" placeholder="Введите тему">
+            </div>
+            <div class="form-group">
+                <div id="summernote"></div>
+            </div>
+            <button type="submit" class="btn btn-primary">Отправить</button>
+        </form>
 
     </div>
 </div>
+
+
+<!-- <% for(var i=0; i<data.length; i++) { %>
+    <div class="card mb-0">
+        <div class="card-body d-flex">
+            <div class="col-md-8">
+                <a href="/page">
+                    <h5 class="card-title">
+                        <%= data[i].title %> <small class="text-muted">(<%= data[i].answers %> answers)</small>
+                    </h5>
+                </a>
+                <h6 class="card-subtitle mb-2 text-muted">Author: <%= data[i].author %>
+                </h6>
+                <p class="card-text"><small class="text-muted">Date: <%= data[i].date %></small></p>
+            </div>
+            <div id="themediv" class="card-body">
+                <img class="imagesized d-block mx-auto" src="img/loced.png" alt="Centered image">
+            </div>
+        </div>
+    </div>
+    <% } %> -->
