@@ -13,6 +13,6 @@ router.post('/login', controller.login)
 router.get('/users', roleMiddleware(["ADMIN"]), controller.getUsers)
 router.get('/auth', authMiddleware, controller.check)
 router.get('/userinfo', authMiddleware, controller.getUserInfo);
-
+router.get('/userdata', authMiddleware, controller.getUserData);
 
 module.exports = router

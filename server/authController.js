@@ -1,5 +1,6 @@
 const User = require('./models/User')
 const Role = require('./models/Role')
+const Ticket = require('./models/Ticket');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator')
@@ -86,6 +87,19 @@ class authController {
         }
     }
 
+    async getUserData(req, res) {
+        try {
+          const userData = await Ticket.find({ author: req.user.id });
+          if (!userData) {
+            return res.status(404).json({ message: `Данные пользователя не найдены` });
+          }
+          res.json({ message: "Данные пользователя получены", data: userData });
+        } catch (e) {
+          console.log(e);
+          res.status(403).json({ message: "Пользователь не авторизован" });
+        }
+      }
+      
 }
 
 module.exports = new authController()

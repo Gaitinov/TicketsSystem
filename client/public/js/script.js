@@ -292,7 +292,7 @@ document.querySelector('#registerButton').addEventListener('click', function () 
 });
 
 
-// Вывод токена в консоль
+// Получение ника пользователя и данных вывода
 
 window.addEventListener('DOMContentLoaded', async () => {
   const token = localStorage.getItem('token');
@@ -309,7 +309,6 @@ window.addEventListener('DOMContentLoaded', async () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Имя пользователя:', data.username);
 
         const userNicknameElement = document.getElementById('userNickname');
         userNicknameElement.textContent = data.username;
@@ -327,4 +326,37 @@ window.addEventListener('DOMContentLoaded', async () => {
   } else {
     console.log('Токен не найден');
   }
+
+  if (token) {
+    try {
+      const response = await fetch('/auth/userdata', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        data.data.forEach(item => {
+          console.log('_id:', item._id);
+          console.log('title:', item.title);
+          console.log('author:', item.author);
+          console.log('date:', item.date);
+          console.log('answers:', item.answers);
+          console.log('--------------------');
+        });
+
+        
+      } else {
+        console.error('Ошибка получения данных пользователя');
+      }
+    } catch (error) {
+      console.error('Ошибка при проверке токена:', error);
+    }
+  } else {
+    console.log('Токен не найден');
+  }
+
 });
