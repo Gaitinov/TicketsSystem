@@ -150,21 +150,37 @@ document.querySelector('#registorButton1').addEventListener('click', async funct
 
 
 
-let links = document.querySelectorAll("#linkitemli a");
-links.forEach(link => {
+const state = {};
+
+window.addEventListener('beforeunload', () => {
+  console.log('beforeunload event fired');
+  if (window.location.hash === '#main') {
+    state.mainContent = document.getElementById('ticketsupload').innerHTML;
+    console.log('Saved mainContent:', state.mainContent);
+  }
+});
+
+document.querySelectorAll("#linkitemli a").forEach(link => {
   link.addEventListener("click", async function (event) {
     event.preventDefault();
+
     document.querySelectorAll('a.nav-link').forEach(function (link) {
       link.classList.remove('disabled');
     });
+
     this.classList.add('disabled');
     let href = this.href;
     let data = await fetch(href);
     document.querySelector("#containermain").innerHTML = await data.text();
     window.location.hash = this.getAttribute("data-hash");
 
+    if (window.location.hash === '#main') {
+      loadUserData();
+    }
+
   });
 });
+
 
 async function start() {
   let hash = window.location.hash;
@@ -327,6 +343,15 @@ window.addEventListener('DOMContentLoaded', async () => {
     console.log('Токен не найден');
   }
 
+  loadUserData();
+
+});
+
+
+async function loadUserData() {
+
+  const token = localStorage.getItem('token');
+
   if (token) {
     try {
       const response = await fetch('/auth/userdata', {
@@ -353,12 +378,11 @@ window.addEventListener('DOMContentLoaded', async () => {
                   <div class="card-body d-flex">
                     <div class="col-md-8">
                       <a href="/page">
-                        <h5 class="card-title">
-                          ${item.title} <small class="text-muted">(${item.answers} answers)</small>
+                        <h5 class="card-title pb-3">
+                          ${item.title}
                         </h5>
                       </a>
-                      <h6 class="card-subtitle mb-2 text-muted">Author: ${item.author}</h6>
-                      <p class="card-text"><small class="text-muted">Date: ${item.date}</small></p>
+                      <p class="card-text">Date: ${item.date}</p>
                     </div>
                     <div id="themediv" class="card-body">
                       <img class="imagesized d-block mx-auto" src="img/loced.png" alt="Centered image">
@@ -368,8 +392,7 @@ window.addEventListener('DOMContentLoaded', async () => {
               `;
         });
 
-        console.log(html);
-        document.getElementById('my-container').innerHTML = html;
+        document.getElementById('ticketsupload').innerHTML = html;
 
 
 
@@ -385,4 +408,4 @@ window.addEventListener('DOMContentLoaded', async () => {
     console.log('Токен не найден');
   }
 
-});
+}
