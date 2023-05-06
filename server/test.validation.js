@@ -6,14 +6,14 @@ async function testValidation() {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
-  
+
   // Создаем нового пользователя с неверными данными
   const invalidUser = new User({
     username: '', // неверное имя пользователя
     email: 'invalid email', // неверный email
     password: '', // неверный пароль
   });
-  
+
   try {
     await invalidUser.save();
     console.log('This user should not have been saved!');

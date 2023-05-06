@@ -21,7 +21,7 @@ const server = http.createServer(async (request, response) => {
   let filePath = `${hash}`;
   let ext = path.extname(filePath);
   let contentType = mimeTypes[ext];
-  
+
   let data;
   let status;
   try {
@@ -33,7 +33,7 @@ const server = http.createServer(async (request, response) => {
     contentType = "text/html";
   }
 
-  response.writeHead(status, {'Content-Type': contentType});
+  response.writeHead(status, { 'Content-Type': contentType });
   response.write(data);
   response.end();
 });
