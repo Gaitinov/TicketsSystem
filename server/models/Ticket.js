@@ -3,7 +3,7 @@ const { Schema, model } = require('mongoose')
 const TicketSchema = new Schema({
   title: String,
   author: String,
-  date: String,
+  date: Date,
   description: String,
 });
 

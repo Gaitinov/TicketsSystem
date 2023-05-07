@@ -373,6 +373,10 @@ async function loadUserData() {
           console.log('description:', item.description);
           console.log('--------------------');
 
+          const DateTicket = item.date;
+                const formattedDate = formatDate(DateTicket);
+                console.log(formattedDate); 
+
           html += `
                 <div class="card mb-0">
                   <div class="card-body d-flex">
@@ -382,7 +386,7 @@ async function loadUserData() {
                           ${item.title}
                         </h5>
                       </a>
-                      <p class="card-text">Date: ${item.date}</p>
+                      <p class="card-text">Date: ${formattedDate}</p>
                     </div>
                     <div id="themediv" class="card-body">
                       <img class="imagesized d-block mx-auto" src="img/loced.png" alt="Centered image">
@@ -408,4 +412,17 @@ async function loadUserData() {
     console.log('Токен не найден');
   }
 
+}
+
+
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
