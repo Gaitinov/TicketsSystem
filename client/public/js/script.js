@@ -1,46 +1,3 @@
-const submitButton = document.getElementById('addticket');
-
-submitButton.addEventListener('click', event => {
-  // prevent the form from being submitted
-  event.preventDefault();
-
-  // get the values from the form inputs
-  const title = document.querySelector('#ticketTitle').value;
-  console.log(title);
-  const author = document.querySelector('#ticketAuthor').value;
-  console.log(author);
-  const description = document.querySelector('#ticketDescription').value;
-  console.log(description);
-
-  // create the new element
-  const newCard = document.createElement('div');
-  newCard.classList.add('card', 'mb-0');
-  newCard.innerHTML = `
-  <div class="card mb-0">
-  <div class="card-body d-flex">
-      <div class="col-md-8">
-          <h5 class="card-title">${title} <small
-                  class="text-muted">(2 answers)</small></h5>
-          <h6 class="card-subtitle mb-2 text-muted">Author: ${author}</h6>
-          <p class="card-text"><small class="text-muted">Date: ${new Date().toLocaleDateString()}</small></p>
-      </div>
-      <div class="card-body">
-          <img class="imagesized d-block mx-auto" src="loced.png" alt="Centered image">
-      </div>
-  </div>
-</div>
-`;
-
-  // append the new element to the page
-  const container = document.querySelector('.container-fluid .col-md-8');
-  container.appendChild(newCard);
-  const content = $('#summernote').summernote('code');
-  console.log(content)
-});
-
-
-
-
 document.querySelector('#loginButton1').addEventListener('click', async function (event) {
   event.preventDefault();
 
@@ -237,7 +194,6 @@ window.onload = function () {
   // Check if token exists in local storage
   const token = localStorage.getItem('token');
   if (token) {
-    console.log('Token exists in local storage.');
     const loginButton = document.querySelector(`a[data-target='#loginModal']`);
     loginButton.style.display = 'none';
     const registerButton = document.querySelector(`a[data-target='#registerModal']`);
@@ -366,19 +322,12 @@ async function loadUserData() {
         const data = await response.json();
         let html = '';
         data.data.forEach(item => {
-          console.log('_id:', item._id);
-          console.log('title:', item.title);
-          console.log('author:', item.author);
-          console.log('date:', item.date);
-          console.log('description:', item.description);
-          console.log('--------------------');
 
           const DateTicket = item.date;
                 const formattedDate = formatDate(DateTicket);
-                console.log(formattedDate); 
 
           html += `
-                <div class="card mb-0">
+                <div class="card mb-0 mb-3">
                   <div class="card-body d-flex">
                     <div class="col-md-8">
                     <a href="/page/${item._id}">

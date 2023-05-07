@@ -67,7 +67,7 @@
             </ul>
 
             <ul class="navbar-nav mr-auto d-lg-none">
-                <li class="nav-item" id="linkitemli">
+                <li class="nav-item">
                     <a class="nav-link text-center font-weight-bold d-none " data-toggle="modal"
                         id="userNicknameTelephone" data-target="#nicknameTelephone">Nickname</a>
                 </li>
@@ -142,52 +142,6 @@
             Copyright 2022 Support Ticketing System
         </div>
     </footer>
-
-
-
-
-    <!-- Submit a Ticket Modal -->
-    <div class="modal fade" id="submitTicketModal" tabindex="-1" role="dialog" aria-labelledby="submitTicketModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="submitTicketModalLabel">Submit a Ticket</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="form-group">
-                            <label for="ticketTitle" class="col-form-label">Title:</label>
-                            <input type="text" class="form-control" id="ticketTitle">
-                        </div>
-                        <div class="form-group">
-                            <label for="ticketAuthor" class="col-form-label">Author:</label>
-                            <input type="text" class="form-control" id="ticketAuthor">
-                        </div>
-                        <div class="form-group">
-                            <label for="ticketDescription" class="col-form-label">Description:</label>
-                            <textarea class="form-control" id="ticketDescription" rows="3"></textarea>
-                            <div id="summernote"></div>
-                            <script>
-                                $('#summernote').summernote({
-                                    placeholder: 'Hello',
-                                    tabsize: 2,
-                                    height: 100
-                                });
-                            </script>
-
-                        </div>
-                        <button type="submit" class="btn btn-primary" id="addticket">Submit</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
 
 
 

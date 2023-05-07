@@ -2,27 +2,26 @@ const currentUrl = window.location.pathname;
 const id = currentUrl.split('/').pop();
 
 window.addEventListener('DOMContentLoaded', async () => {
-    const token = localStorage.getItem('token');
+  const token = localStorage.getItem('token');
 
-    if (token) {
-        try {
-            const response = await fetch(`/auth/ticketdata/${id}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
+  if (token) {
+    try {
+      const response = await fetch(`/auth/ticketdata/${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
 
-            if (response.ok) {
-                const data = await response.json();
-                const item = data.data;
+      if (response.ok) {
+        const data = await response.json();
+        const item = data.data;
 
-                const DateTicket = item.date;
-                const formattedDate = formatDate(DateTicket);
-                console.log(formattedDate); 
-
-                let html = `
+        const DateTicket = item.date;
+        const formattedDate = formatDate(DateTicket);
+        
+        let html = `
                   <div class="card">
                     <div class="card-body py-3">
                       <h5 class="card-title m-0">
@@ -46,33 +45,55 @@ window.addEventListener('DOMContentLoaded', async () => {
                   </div>
                 `;
 
-                // Вставьте HTML-строку в нужное место на вашей странице
-                const container = document.getElementById('ticketdataupload'); // замените 'container' на ID элемента, который должен содержать данные тикета
-                container.innerHTML = html;
+        const container = document.getElementById('ticketdataupload');
+        container.innerHTML = html;
 
+        const ticketContainer = document.getElementById('ticketContainer');
 
+        let messageHtml = '';
 
-            } else {
-                console.error('Ошибка получения данных от сервера:', response.statusText);
-            }
-        } catch (error) {
-            console.error('Ошибка при проверке токена:', error);
-        }
-    } else {
-        console.log('Токен не найден');
+        item.messages.forEach(message => {
+          const formattedDate = new Date(message.date).toLocaleDateString('ru-RU');
+          const isUserMessage = message.sender === item.author;
+
+          messageHtml += `
+      <div class="container mt-4">
+        <div class="row border p-3 ${isUserMessage ? 'user-block' : 'admin-block'}">
+          <div class="col-sm-3 align-self-center mt-2 text-center">
+            <h5 class="mb-5 mt-2">${isUserMessage ? 'User' : 'Admin'}</h5>
+          </div>
+          <div class="col-sm-9 align-self-start mt-2">
+            <h5 class="text-muted mb-0">${formattedDate}</h5>
+            <p class="mt-4">${message.content}</p>
+          </div>
+        </div>
+      </div>
+    `;
+        });
+
+        ticketContainer.innerHTML = messageHtml;
+      } else {
+        console.error('Ошибка получения данных от сервера:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Ошибка при проверке токена:', error);
     }
+  } else {
+    console.log('Токен не найден');
+  }
 });
 
 
 
+
 function formatDate(dateString) {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
-  
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-  }
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
