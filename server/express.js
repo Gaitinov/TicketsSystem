@@ -40,6 +40,21 @@ async function connection() {
       );
     });
 
+    app.get('/page/:id', function (req, res, next) {
+      const id = req.params.id;
+      res.render(
+        'page', // имя шаблона страницы
+        { id: id }, // объект данных для передачи в шаблон
+        function (err, html) {
+          if (err) {
+            next(err);
+          } else {
+            res.send(html);
+          }
+        }
+      );
+    });
+
     app.use(function (err, req, res, next) {
       if (err) {
         console.error(err);

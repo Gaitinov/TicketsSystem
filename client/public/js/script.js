@@ -377,7 +377,7 @@ async function loadUserData() {
                 <div class="card mb-0">
                   <div class="card-body d-flex">
                     <div class="col-md-8">
-                      <a href="/page">
+                    <a href="/page/${item._id}">
                         <h5 class="card-title pb-3">
                           ${item.title}
                         </h5>
