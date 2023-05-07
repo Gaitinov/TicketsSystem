@@ -370,7 +370,7 @@ async function loadUserData() {
           console.log('title:', item.title);
           console.log('author:', item.author);
           console.log('date:', item.date);
-          console.log('answers:', item.answers);
+          console.log('description:', item.description);
           console.log('--------------------');
 
           html += `

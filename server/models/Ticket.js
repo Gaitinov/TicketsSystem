@@ -4,7 +4,7 @@ const TicketSchema = new Schema({
   title: String,
   author: String,
   date: String,
-  answers: Number,
+  description: String,
 });
 
 module.exports = model('Ticket', TicketSchema);

@@ -99,6 +99,33 @@ class authController {
           res.status(403).json({ message: "Пользователь не авторизован" });
         }
       }
+
+      async getTicketData(req, res) {
+        try {
+          const ticketId = req.params.id;
+          const ticket = await Ticket.findById(ticketId);
+      
+          if (!ticket) {
+            return res.status(404).json({ message: `Тикет не найден` });
+          }
+      
+          const user = await User.findById(req.user.id);
+      
+          if (ticket.author.toString() === req.user.id || user.roles.includes('ADMIN')) {
+            res.json({ message: "Данные тикета получены", data: ticket });
+          } else {
+            res.status(403).json({ message: "Пользователь не авторизован" });
+          }
+        } catch (e) {
+          console.log(e);
+          res.status(500).json({ message: "Ошибка сервера" });
+        }
+      }
+      
+      
+      
+      
+      
       
 }
 

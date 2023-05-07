@@ -14,5 +14,6 @@ router.get('/users', roleMiddleware(["ADMIN"]), controller.getUsers)
 router.get('/auth', authMiddleware, controller.check)
 router.get('/userinfo', authMiddleware, controller.getUserInfo);
 router.get('/userdata', authMiddleware, controller.getUserData);
+router.get('/ticketdata/:id', authMiddleware, controller.getTicketData);
 
 module.exports = router
