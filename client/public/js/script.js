@@ -42,7 +42,10 @@ document.querySelector('#loginButton1').addEventListener('click', async function
         console.log(token);
         location.reload();
       } else {
-        console.error('Пользователь не найден');
+        errorMessage.innerHTML = 'Incorrect username or password';
+        errorMessage.style.display = 'block';
+        loginUsername.classList.add('is-invalid');
+        loginPassword.classList.add('is-invalid');
       }
     } catch (error) {
       console.error(error);
@@ -90,16 +93,26 @@ document.querySelector('#registorButton1').addEventListener('click', async funct
     const email = document.querySelector('#registerEmail').value;
     const password = document.querySelector('#registerPassword').value;
 
-    const response = await fetch('/auth/registration', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ username, email, password })
-    });
-
-    const data = await response.json();
-    location.reload();
+    try {
+      const response = await fetch('/auth/registration', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, email, password })
+      });
+    
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message);
+      }
+    
+      const data = await response.json();
+      location.reload();
+    } catch (error) {
+      errorMessage.innerHTML = error.message;
+      errorMessage.style.display = 'block';
+    }    
   }
 });
 
@@ -296,7 +309,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       console.error('Ошибка при проверке токена:', error);
     }
   } else {
-    console.log('Токен не найден');
+    // console.log('Токен не найден');
   }
 
   loadUserData();
@@ -324,7 +337,7 @@ async function loadUserData() {
         data.data.forEach(item => {
 
           const DateTicket = item.date;
-                const formattedDate = formatDate(DateTicket);
+          const formattedDate = formatDate(DateTicket);
 
           html += `
                 <div class="card mb-0 mb-3">
@@ -358,7 +371,7 @@ async function loadUserData() {
       console.error('Ошибка при проверке токена:', error);
     }
   } else {
-    console.log('Токен не найден');
+    // console.log('Токен не найден');
   }
 
 }
