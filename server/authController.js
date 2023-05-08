@@ -84,10 +84,11 @@ class authController {
   async getUserInfo(req, res) {
     try {
       const user = await User.findOne({ _id: req.user.id });
+      const isAdmin = user.roles.includes('ADMIN');
       if (!user) {
         return res.status(404).json({ message: `Пользователь не найден` });
       }
-      res.json({ message: "Информация о пользователе получена", username: user.username });
+      res.json({ message: "Информация о пользователе получена", username: user.username, roles: user.roles });
     } catch (e) {
       console.log(e);
       res.status(403).json({ message: "Пользователь не авторизован" });
@@ -106,6 +107,36 @@ class authController {
       res.status(403).json({ message: "Пользователь не авторизован" });
     }
   }
+
+  async getAllTickets(req, res) {
+    try {
+      const user = await User.findOne({ _id: req.user.id });
+  
+      if (!user) {
+        return res.status(404).json({ message: `Пользователь не найден` });
+      }
+  
+      const isAdmin = user.roles.includes('ADMIN');
+  
+      if (isAdmin) {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+  
+        const allTickets = await Ticket.find().skip(skip).limit(limit);
+        const totalTickets = await Ticket.countDocuments();
+  
+        res.json({ message: "Все тикеты получены", data: allTickets, total: totalTickets });
+      } else {
+        res.status(403).json({ message: "Доступ запрещен. Только администраторы могут получить все тикеты" });
+      }
+    } catch (e) {
+      console.log(e);
+      res.status(500).json({ message: "Ошибка сервера" });
+    }
+  }
+  
+  
 
   async getTicketData(req, res) {
     try {
@@ -134,23 +165,33 @@ class authController {
   async createTicket(req, res) {
     try {
       const { title, description } = req.body;
-
+      const userId = req.user.id;
+  
+      // Найти количество тикетов, созданных данным пользователем
+      const userTicketCount = await Ticket.countDocuments({ author: userId });
+  
+      // Проверить, превышено ли максимальное количество тикетов (3)
+      if (userTicketCount >= 3) {
+        return res.status(400).json({ message: 'Вы не можете создать больше 3 тикетов' });
+      }
+  
       const newTicket = new Ticket({
         title: title,
-        author: req.user.id,
+        author: userId,
         date: new Date(),
         description: description,
         messages: []
       });
-
+  
       await newTicket.save();
       res.status(201).json({ message: 'Тикет успешно создан', data: newTicket });
-
+  
     } catch (e) {
       console.log(e);
       res.status(500).json({ message: 'Ошибка сервера' });
     }
   }
+  
 
   async addMessageToTicket(req, res) {
     try {

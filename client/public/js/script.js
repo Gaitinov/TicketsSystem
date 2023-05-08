@@ -148,6 +148,10 @@ document.querySelectorAll("#linkitemli a").forEach(link => {
       loadUserData();
     }
 
+    if (window.location.hash === '#viewtickets') {
+      loadAllTickets();
+    }
+
   });
 });
 
@@ -177,7 +181,7 @@ async function start() {
 
 
 
-function attachSubmitButtonListener() {
+async function attachSubmitButtonListener() {
   const submitButton = document.getElementById('submit-button');
   if (submitButton) {
     submitButton.addEventListener('click', async () => {
@@ -221,7 +225,12 @@ function attachSubmitButtonListener() {
 
         } else {
           // Произошла ошибка при создании тикета
-          alert('Ошибка при создании тикета');
+          const errorData = await response.json();
+          if (errorData.message === 'Вы не можете создать больше 3 тикетов') {
+            alert('Вы не можете создать больше 3 тикетов');
+          } else {
+            alert('Ошибка при создании тикета');
+          }
         }
       } catch (error) {
         console.error('Ошибка при отправке тикета:', error);
@@ -229,6 +238,7 @@ function attachSubmitButtonListener() {
     });
   }
 }
+
 
 
 start();
@@ -363,6 +373,17 @@ window.addEventListener('DOMContentLoaded', async () => {
         userNicknameElementTelephone.textContent = data.username;
 
 
+        const isAdmin = data.roles.includes('ADMIN');
+
+        const adminLinks = document.querySelectorAll('.admin-only');
+        adminLinks.forEach((link) => {
+          if (isAdmin) {
+            link.classList.remove('d-none');
+          }
+        });
+
+
+
       } else {
         console.error('Ошибка получения информации о пользователе');
       }
@@ -377,7 +398,69 @@ window.addEventListener('DOMContentLoaded', async () => {
     loadUserData();
   }
 
+  if (location.hash === '#viewtickets') {
+    loadAllTickets();
+  }
+
 });
+
+
+async function loadAllTickets(page = 1, limit = 10) {
+  const token = localStorage.getItem('token');
+
+  if (token) {
+    try {
+      const response = await fetch(`/auth/alltickets?page=${page}&limit=${limit}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        let html = '';
+        data.data.forEach(item => {
+
+          const DateTicket = item.date;
+          const formattedDate = formatDate(DateTicket);
+
+          html += `
+                <div class="card mb-0 mb-3">
+                  <div class="card-body d-flex">
+                    <div class="col-md-8">
+                    <a href="/page/${item._id}">
+                        <h5 class="card-title pb-3">
+                          ${item.title}
+                        </h5>
+                      </a>
+                      <p class="card-text">Date: ${formattedDate}</p>
+                    </div>
+                    <div id="themediv" class="card-body">
+                      <img class="imagesized d-block mx-auto" src="img/loced.png" alt="Centered image">
+                    </div>
+                  </div>
+                </div>
+              `;
+        });
+
+        document.getElementById('ticketadminsupload').innerHTML = html;
+
+        const total = data.total;
+        const currentPage = page;
+        createPagination(total, limit, currentPage);
+
+      } else {
+        console.error('Ошибка получения всех тикетов');
+      }
+    } catch (error) {
+      console.error('Ошибка при проверке токена:', error);
+    }
+  } else {
+    // console.log('Токен не найден');
+  }
+}
 
 
 async function loadUserData() {
@@ -439,6 +522,34 @@ async function loadUserData() {
 
 
 }
+
+function createPagination(totalTickets, currentPage) {
+  const totalPages = Math.ceil(totalTickets / 10);
+  let html = '';
+
+  for (let i = 1; i <= totalPages; i++) {
+    html += `<li class="page-item${i === currentPage ? ' active' : ''}"><a class="page-link" href="#" onclick="handlePageClick(event, ${i})">${i}</a></li>`;
+  }
+
+  const paginationContainer = document.getElementById('pagination-container');
+  if (paginationContainer) {
+    paginationContainer.innerHTML = `
+    <nav aria-label="Page navigation" class="d-flex justify-content-center">
+    <ul class="pagination">
+      ${html}
+    </ul>
+  </nav>  
+    `;
+  } else {
+    console.error('Pagination container not found');
+  }
+}
+
+function handlePageClick(event, pageNumber) {
+  event.preventDefault();
+  loadAllTickets(pageNumber);
+}
+
 
 
 function formatDate(dateString) {
