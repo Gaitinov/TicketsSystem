@@ -161,7 +161,7 @@ async function start() {
   let data = await fetch(`${hash}.ejs`);
   document.querySelector("#containermain").innerHTML = await data.text();
 
-
+  // Инициализация Summernote
   $(document).ready(function () {
     $('#summernote').summernote({
       placeholder: 'Hello',
@@ -170,7 +170,62 @@ async function start() {
       width: '100%',
     });
   });
+
+  // Прикрепление обработчика событий для кнопки отправки
+  attachSubmitButtonListener();
 }
+
+
+
+function attachSubmitButtonListener() {
+  const submitButton = document.getElementById('submit-button');
+  if (submitButton) {
+    submitButton.addEventListener('click', async () => {
+      const token = localStorage.getItem('token');
+  
+      const title = document.getElementById('subject').value;
+      const description = $('#summernote').summernote('code');
+    
+      // Проверка, что оба поля заполнены
+      if (!title || !description || description === '<p><br></p>') {
+        alert('Пожалуйста, заполните все поля');
+        return;
+      }
+    
+      const ticketData = {
+        title: title,
+        description: description,
+      };
+    
+      try {
+        const response = await fetch('/auth/ticket/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify(ticketData),
+        });
+    
+        if (response.ok) {
+          // Тикет успешно создан
+          alert('Тикет создан');
+
+          // Очистка полей после успешного создания тикета
+          document.getElementById('subject').value = '';
+          $('#summernote').summernote('reset');
+
+        } else {
+          // Произошла ошибка при создании тикета
+          alert('Ошибка при создании тикета');
+        }
+      } catch (error) {
+        console.error('Ошибка при отправке тикета:', error);
+      }
+    });
+  }
+}
+
 
 
 start();
@@ -226,7 +281,6 @@ window.onload = function () {
     nicknameTelephone.classList.remove('d-none');
   }
 
-  document.querySelector('.spinner-border').style.display = 'none';
 };
 
 
@@ -316,7 +370,10 @@ window.addEventListener('DOMContentLoaded', async () => {
     // console.log('Токен не найден');
   }
 
+  if (location.hash === '#main') {
   loadUserData();
+}
+
 
 });
 
@@ -377,36 +434,7 @@ async function loadUserData() {
   } else {
     // console.log('Токен не найден');
   }
-
-  document.getElementById('ticket-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const ticketData = {
-      title: document.getElementById('subject').value,
-      description: $('#summernote').summernote('code')
-    };
-
-    try {
-      const response = await fetch('/auth/ticket/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(ticketData)
-      });
-
-      if (response.ok) {
-        // Тикет успешно создан
-        alert('Тикет создан');
-      } else {
-        // Произошла ошибка при создании тикета
-        alert('Ошибка при создании тикета');
-      }
-    } catch (error) {
-      console.error('Ошибка при отправке тикета:', error);
-    }
-  });
+  
 
 }
 

@@ -1,10 +1,10 @@
 const { Schema, model } = require('mongoose');
 
 const TicketSchema = new Schema({
-  title: String,
-  author: String,
-  date: Date,
-  description: String,
+  title: { type: String, required: true },
+  author: { type: String, required: true },
+  date: { type: Date, required: true },
+  description: { type: String, required: true },
   messages: [
     {
       sender: String,
