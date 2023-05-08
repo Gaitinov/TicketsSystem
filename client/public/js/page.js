@@ -20,10 +20,18 @@ window.addEventListener('DOMContentLoaded', async () => {
       if (response.ok) {
         const data = await response.json();
         const item = data.data;
+        const isAdmin = data.isAdmin;
+
+        const isClosed = item.status === 'closed';
+
+        if (isAdmin) {
+          const adminButton = document.querySelector('.btn.btn-primary.float-right.d-none');
+          adminButton.classList.remove('d-none');
+        }
 
         const DateTicket = item.date;
         const formattedDate = formatDate(DateTicket);
-        
+
         let html = `
                   <div class="card">
                     <div class="card-body py-3">
@@ -75,6 +83,21 @@ window.addEventListener('DOMContentLoaded', async () => {
         });
 
         ticketContainer.innerHTML = messageHtml;
+
+        if (isClosed) {
+          const closedAlert = `
+            <div class="alert alert-success mt-3 text-center" role="alert">
+              This ticket has been closed.
+            </div>
+          `;
+          ticketContainer.insertAdjacentHTML('afterend', closedAlert);
+
+          const submitContainer = document.getElementById('Containesubmit');
+          submitContainer.classList.add('d-none');
+        }
+
+
+
       } else {
         console.error('Ошибка получения данных от сервера:', response.statusText);
       }
@@ -88,11 +111,12 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('submitMessageForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+
     const messageContent = $('#summernote').summernote('code');
-  
+
     // Удаляем все HTML-теги и заменяем неразрывные пробелы на обычные пробелы
     const strippedContent = messageContent.replace(/(<([^>]+)>)/gi, "").replace(/&nbsp;/g, ' ');
-  
+
     // Проверяем, что сообщение не пустое и не состоит только из пробелов
     if (strippedContent.trim() !== '') {
       try {
@@ -104,10 +128,13 @@ window.addEventListener('DOMContentLoaded', async () => {
           },
           body: JSON.stringify({ content: messageContent }),
         });
-  
+
         if (response.ok) {
           const data = await response.json();
           location.reload();
+        } else if (response.status === 400) {
+          const data = await response.json();
+          alert(data.message);
         } else {
           console.error('Ошибка отправки сообщения:', response.statusText);
         }
@@ -118,13 +145,32 @@ window.addEventListener('DOMContentLoaded', async () => {
       alert('Пожалуйста, введите ваше сообщение');
     }
   });
-  
-  
-  
-  
+
+
+
+  document.getElementById('confirmClose').addEventListener('click', () => closeTicket(token));
 
 
 });
+
+
+async function closeTicket(token) {
+  const response = await fetch(`/auth/closeticket/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+    console.log('Тикет закрыт:', data);
+    // Здесь вы можете обновить пользовательский интерфейс, если это необходимо
+  } else {
+    console.error('Ошибка при закрытии тикета:', response.statusText);
+  }
+}
 
 
 function formatDate(dateString) {

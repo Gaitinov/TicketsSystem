@@ -25,5 +25,6 @@ router.get('/auth', authMiddleware, controller.check)
 router.get('/userinfo', authMiddleware, controller.getUserInfo);
 router.get('/userdata', authMiddleware, controller.getUserData);
 router.get('/ticketdata/:id', authMiddleware, controller.getTicketData);
+router.put('/closeticket/:id', authMiddleware, controller.closeTicket);
 
 module.exports = router

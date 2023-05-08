@@ -5,6 +5,7 @@ const TicketSchema = new Schema({
   author: { type: String, required: true },
   date: { type: Date, default: Date.now, required: true },
   description: { type: String, required: true },
+  status: { type: String, default: 'open', required: true },
   messages: [
     {
       sender: { type: String, required: true },

@@ -111,15 +111,16 @@ class authController {
     try {
       const ticketId = req.params.id;
       const ticket = await Ticket.findById(ticketId);
-
+  
       if (!ticket) {
         return res.status(404).json({ message: `Тикет не найден` });
       }
-
+  
       const user = await User.findById(req.user.id);
-
-      if (ticket.author.toString() === req.user.id || user.roles.includes('ADMIN')) {
-        res.json({ message: "Данные тикета получены", data: ticket });
+      const isAdmin = user.roles.includes('ADMIN');
+  
+      if (ticket.author.toString() === req.user.id || isAdmin) {
+        res.json({ message: "Данные тикета получены", data: ticket, isAdmin: isAdmin });
       } else {
         res.status(403).json({ message: "Пользователь не авторизован" });
       }
@@ -128,6 +129,7 @@ class authController {
       res.status(500).json({ message: "Ошибка сервера" });
     }
   }
+  
 
   async createTicket(req, res) {
     try {
@@ -157,11 +159,17 @@ class authController {
       const userId = req.user.id;
   
       const ticket = await Ticket.findById(ticketId);
+
+      
   
       if (!ticket) {
         return res.status(404).json({ message: `Тикет не найден` });
       }
   
+      if (ticket.status === 'closed') {
+        return res.status(400).json({ message: 'Нельзя добавить сообщение к закрытому тикету' });
+      }
+
       const isAdmin = req.user.roles.includes('ADMIN');
       if (userId !== ticket.author.toString() && !isAdmin) {
         return res.status(403).json({ message: 'У вас нет прав на добавление сообщения к этому тикету' });
@@ -184,6 +192,33 @@ class authController {
     }
   }
   
+
+  async closeTicket(req, res) {
+    try {
+      const ticketId = req.params.id;
+      const ticket = await Ticket.findById(ticketId);
+  
+      if (!ticket) {
+        return res.status(404).json({ message: `Тикет не найден` });
+      }
+  
+      const user = await User.findById(req.user.id);
+      const isAdmin = user.roles.includes('ADMIN');
+  
+      if (isAdmin) {
+        ticket.status = 'closed';
+        await ticket.save();
+        res.json({ message: "Тикет закрыт", data: ticket });
+      } else {
+        res.status(403).json({ message: "Пользователь не авторизован" });
+      }
+    } catch (e) {
+      console.log(e);
+      res.status(500).json({ message: "Ошибка сервера" });
+    }
+  }
+  
+
 }
 
 module.exports = new authController()
