@@ -205,9 +205,6 @@ window.addEventListener("hashchange", function () {
 
 window.onload = function () {
 
-  document.querySelector('.spinner-border').style.display = 'block';
-
-
   // Check if token exists in local storage
   const token = localStorage.getItem('token');
   if (token) {
@@ -380,6 +377,36 @@ async function loadUserData() {
   } else {
     // console.log('Токен не найден');
   }
+
+  document.getElementById('ticket-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const ticketData = {
+      title: document.getElementById('subject').value,
+      description: $('#summernote').summernote('code')
+    };
+
+    try {
+      const response = await fetch('/auth/ticket/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(ticketData)
+      });
+
+      if (response.ok) {
+        // Тикет успешно создан
+        alert('Тикет создан');
+      } else {
+        // Произошла ошибка при создании тикета
+        alert('Ошибка при создании тикета');
+      }
+    } catch (error) {
+      console.error('Ошибка при отправке тикета:', error);
+    }
+  });
 
 }
 

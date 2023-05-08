@@ -10,6 +10,15 @@ router.post('/registration', [
     check('password', "Пароль должен быть больше 4 и меньше 10 символов").isLength({ min: 4, max: 10 })
 ], controller.registration)
 router.post('/login', controller.login)
+router.post(
+    '/ticket/create',
+    authMiddleware,
+    [
+        check('title', 'Поле темы должно быть заполнено').notEmpty(),
+        check('description', 'Поле описания должно быть заполнено').notEmpty(),
+    ],
+    controller.createTicket
+);
 router.get('/users', roleMiddleware(["ADMIN"]), controller.getUsers)
 router.get('/auth', authMiddleware, controller.check)
 router.get('/userinfo', authMiddleware, controller.getUserInfo);
