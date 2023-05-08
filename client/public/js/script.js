@@ -182,21 +182,24 @@ function attachSubmitButtonListener() {
   if (submitButton) {
     submitButton.addEventListener('click', async () => {
       const token = localStorage.getItem('token');
-  
+
       const title = document.getElementById('subject').value;
       const description = $('#summernote').summernote('code');
-    
+
+      // Удаляем все HTML-теги и заменяем неразрывные пробелы на обычные пробелы
+      const strippedContent = description.replace(/(<([^>]+)>)/gi, "").replace(/&nbsp;/g, ' ');
+
       // Проверка, что оба поля заполнены
-      if (!title || !description || description === '<p><br></p>') {
+      if (!title || !strippedContent.trim()) {
         alert('Пожалуйста, заполните все поля');
         return;
       }
-    
+
       const ticketData = {
         title: title,
         description: description,
       };
-    
+
       try {
         const response = await fetch('/auth/ticket/create', {
           method: 'POST',
@@ -206,10 +209,11 @@ function attachSubmitButtonListener() {
           },
           body: JSON.stringify(ticketData),
         });
-    
+
         if (response.ok) {
           // Тикет успешно создан
           alert('Тикет создан');
+          location.reload();
 
           // Очистка полей после успешного создания тикета
           document.getElementById('subject').value = '';
@@ -225,7 +229,6 @@ function attachSubmitButtonListener() {
     });
   }
 }
-
 
 
 start();
@@ -370,10 +373,9 @@ window.addEventListener('DOMContentLoaded', async () => {
     // console.log('Токен не найден');
   }
 
-  if (location.hash === '#main') {
-  loadUserData();
-}
-
+  if (location.hash === '#main' || location.hash === '') {
+    loadUserData();
+  }
 
 });
 
@@ -434,7 +436,7 @@ async function loadUserData() {
   } else {
     // console.log('Токен не найден');
   }
-  
+
 
 }
 

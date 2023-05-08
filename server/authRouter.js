@@ -19,6 +19,7 @@ router.post(
     ],
     controller.createTicket
 );
+router.post('/ticket/:id/addmessage', authMiddleware, controller.addMessageToTicket);
 router.get('/users', roleMiddleware(["ADMIN"]), controller.getUsers)
 router.get('/auth', authMiddleware, controller.check)
 router.get('/userinfo', authMiddleware, controller.getUserInfo);

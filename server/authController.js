@@ -150,6 +150,40 @@ class authController {
     }
   }
 
+  async addMessageToTicket(req, res) {
+    try {
+      const ticketId = req.params.id;
+      const { content } = req.body;
+      const userId = req.user.id;
+  
+      const ticket = await Ticket.findById(ticketId);
+  
+      if (!ticket) {
+        return res.status(404).json({ message: `Тикет не найден` });
+      }
+  
+      const isAdmin = req.user.roles.includes('ADMIN');
+      if (userId !== ticket.author.toString() && !isAdmin) {
+        return res.status(403).json({ message: 'У вас нет прав на добавление сообщения к этому тикету' });
+      }
+  
+      const newMessage = {
+        sender: userId,
+        content,
+        date: new Date()
+      };
+  
+      // Добавляем сообщение к тикету и сохраняем
+      ticket.messages.push(newMessage);
+      await ticket.save();
+  
+      res.json({ message: "Сообщение добавлено", data: ticket });
+    } catch (e) {
+      console.log(e);
+      res.status(500).json({ message: "Ошибка сервера" });
+    }
+  }
+  
 }
 
 module.exports = new authController()

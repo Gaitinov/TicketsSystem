@@ -6,6 +6,9 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   if (token) {
     try {
+
+      initializeEditor();
+
       const response = await fetch(`/auth/ticketdata/${id}`, {
         method: 'GET',
         headers: {
@@ -34,7 +37,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                   <div class="container mt-4 position-relative">
                     <div class="row border p-3">
                       <div class="col-sm-3 align-self-center mt-2 text-center">
-                        <h5 class="mb-5 mt-2">Username</h5>
+                        <h5 class="mb-5 mt-2">User</h5>
                       </div>
             
                       <div class="col-sm-9 align-self-start mt-2">
@@ -53,7 +56,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         let messageHtml = '';
 
         item.messages.forEach(message => {
-          const formattedDate = new Date(message.date).toLocaleDateString('ru-RU');
+          const formattedDate = formatDate(message.date);
           const isUserMessage = message.sender === item.author;
 
           messageHtml += `
@@ -81,9 +84,47 @@ window.addEventListener('DOMContentLoaded', async () => {
   } else {
     console.log('Токен не найден');
   }
+
+
+  document.getElementById('submitMessageForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const messageContent = $('#summernote').summernote('code');
+  
+    // Удаляем все HTML-теги и заменяем неразрывные пробелы на обычные пробелы
+    const strippedContent = messageContent.replace(/(<([^>]+)>)/gi, "").replace(/&nbsp;/g, ' ');
+  
+    // Проверяем, что сообщение не пустое и не состоит только из пробелов
+    if (strippedContent.trim() !== '') {
+      try {
+        const response = await fetch(`/auth/ticket/${id}/addmessage`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({ content: messageContent }),
+        });
+  
+        if (response.ok) {
+          const data = await response.json();
+          location.reload();
+        } else {
+          console.error('Ошибка отправки сообщения:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Ошибка при отправке сообщения:', error);
+      }
+    } else {
+      alert('Пожалуйста, введите ваше сообщение');
+    }
+  });
+  
+  
+  
+  
+
+
 });
-
-
 
 
 function formatDate(dateString) {
@@ -96,4 +137,22 @@ function formatDate(dateString) {
   const seconds = String(date.getSeconds()).padStart(2, '0');
 
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
+function initializeEditor() {
+  $('#summernote').summernote({
+    placeholder: '',
+    tabsize: 2,
+    height: 300,
+    width: '100%',
+  });
+
+  // Confirm close action
+  $('#confirmClose').click(function () {
+    // Your code to close the topic goes here
+    console.log('Topic closed');
+
+    // Close the modal
+    $('#closeModal').modal('hide');
+  });
 }

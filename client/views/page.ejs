@@ -39,36 +39,15 @@
 
     <div class="container mt-4" id="Containesubmit">
       <!-- Submit a Ticket Modal -->
-      <form>
+      <form id="submitMessageForm">
         <div class="form-group">
           <div id="summernote"></div>
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" id="submitMessageButton" class="btn btn-primary">Submit</button>
         <button type="button" class="btn btn-primary float-right" data-toggle="modal"
           data-target="#closeModal">Close</button>
       </form>
     </div>
-
-    <script>
-      $(document).ready(function () {
-        $('#summernote').summernote({
-          placeholder: 'Hello',
-          tabsize: 2,
-          height: 300,
-          width: '100%',
-        });
-
-        // Confirm close action
-        $('#confirmClose').click(function () {
-          // Your code to close the topic goes here
-          console.log('Topic closed');
-
-          // Close the modal
-          $('#closeModal').modal('hide');
-        });
-      });
-    </script>
-
   </div>
 
 
