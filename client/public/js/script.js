@@ -101,18 +101,18 @@ document.querySelector('#registorButton1').addEventListener('click', async funct
         },
         body: JSON.stringify({ username, email, password })
       });
-    
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message);
       }
-    
+
       const data = await response.json();
       location.reload();
     } catch (error) {
       errorMessage.innerHTML = error.message;
       errorMessage.style.display = 'block';
-    }    
+    }
   }
 });
 
@@ -175,34 +175,38 @@ async function start() {
 
 start();
 
-window.addEventListener("hashchange", function () {
-  start();
+
+function updateNavLinkState() {
   let hash = window.location.hash;
   hash = hash.substring(1);
   if (!hash) {
     hash = "main";
   }
   document.querySelectorAll("a.nav-link").forEach(link => {
-    link.classList.remove("disabled");
+    // Проверка, является ли ссылка текущей
+    if (link.dataset.hash === hash) {
+      link.classList.add("disabled");
+    } else {
+      link.classList.remove("disabled");
+    }
   });
-  let currentLink = document.querySelectorAll(`a.nav-link[data-hash='${hash}']`);
-  currentLink.forEach(link => {
-    link.classList.add("disabled");
-  });
+}
+
+function updateHash(newHash) {
+  window.location.hash = newHash;
+}
+
+window.addEventListener("hashchange", function () {
+  start();
+  updateNavLinkState();
 });
 
 
 
 window.onload = function () {
-  let hash = window.location.hash;
-  hash = hash.substring(1);
-  if (!hash) {
-    hash = "main";
-  }
-  let currentLink = document.querySelectorAll(`a.nav-link[data-hash='${hash}']`);
-  currentLink.forEach(link => {
-    link.classList.add('disabled');
-  });
+
+  document.querySelector('.spinner-border').style.display = 'block';
+
 
   // Check if token exists in local storage
   const token = localStorage.getItem('token');
@@ -224,6 +228,8 @@ window.onload = function () {
     const nicknameTelephone = document.querySelector(`a[data-target='#nicknameTelephone']`);
     nicknameTelephone.classList.remove('d-none');
   }
+
+  document.querySelector('.spinner-border').style.display = 'none';
 };
 
 
@@ -261,10 +267,8 @@ $(function () {
   });
 });
 
-// document.querySelector('.spinner-border').style.display = 'block';
-// // load data
 
-document.querySelector('.spinner-border').style.display = 'none';
+
 
 document.querySelector('#loginButton').addEventListener('click', function () {
   $('#navbarNav').collapse('toggle');
@@ -280,6 +284,9 @@ document.querySelector('#registerButton').addEventListener('click', function () 
 // Получение ника пользователя и данных вывода
 
 window.addEventListener('DOMContentLoaded', async () => {
+
+  updateNavLinkState();
+
   const token = localStorage.getItem('token');
 
   if (token) {

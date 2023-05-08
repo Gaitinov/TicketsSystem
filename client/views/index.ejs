@@ -31,13 +31,6 @@
 
 <body>
 
-    <div class="d-flex justify-content-center">
-        <div class="spinner-border" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
-    </div>
-
-
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a id="unique-link" class="navbar-brand">Support Ticketing System</a>
@@ -72,17 +65,16 @@
                         id="userNicknameTelephone" data-target="#nicknameTelephone">Nickname</a>
                 </li>
                 <li class="nav-item" id="linkitemli">
-                    <a class="nav-link text-center" href="main.ejs" data-hash="main" data-toggle="collapse"
+                    <a class="nav-link text-center" onclick="updateHash('main')" data-hash="main" data-toggle="collapse"
                         data-target="#navbarNav">Home</a>
                 </li>
                 <li class="nav-item" id="linkitemli">
-                    <a class="nav-link text-center" href="viewtickets.ejs" data-hash="viewtickets"
+                    <a class="nav-link text-center" onclick="updateHash('viewtickets')" data-hash="viewtickets"
                         data-toggle="collapse" data-target="#navbarNav">View Tickets</a>
                 </li>
                 <li class="nav-item" id="linkitemli">
-                    <a class="nav-link text-center" href="createticket.ejs" data-hash="createticket"
-                        data-toggle="collapse" data-target="#navbarNav">Submit a
-                        Ticket</a>
+                    <a class="nav-link text-center" onclick="updateHash('createticket')" data-hash="createticket"
+                        data-toggle="collapse" data-target="#navbarNav">Submit a Ticket</a>
                 </li>
                 <li class="nav-item p-1 ">
                     <a class="nav-link text-center d-none" data-toggle="modal" data-target="#logouttelephone">Logout</a>
@@ -92,13 +84,13 @@
 
             <ul class="navbar-nav mr-auto d-none d-lg-flex">
                 <li class="nav-item" id="linkitemli">
-                    <a class="nav-link" href="main.ejs" data-hash="main">Home</a>
+                    <a class="nav-link" onclick="updateHash('main')" data-hash="main">Home</a>
                 </li>
                 <li class="nav-item" id="linkitemli">
-                    <a class="nav-link" href="viewtickets.ejs" data-hash="viewtickets">View Tickets</a>
+                    <a class="nav-link" onclick="updateHash('viewtickets')" data-hash="viewtickets">View Tickets</a>
                 </li>
                 <li class="nav-item" id="linkitemli">
-                    <a class="nav-link" href="createticket.ejs" data-hash="createticket">Submit a
+                    <a class="nav-link" onclick="updateHash('createticket')" data-hash="createticket">Submit a
                         Ticket</a>
                 </li>
             </ul>
