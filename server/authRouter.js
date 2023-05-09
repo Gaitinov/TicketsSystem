@@ -20,12 +20,12 @@ router.post(
     controller.createTicket
 );
 router.post('/ticket/:id/addmessage', authMiddleware, controller.addMessageToTicket);
-router.get('/users', roleMiddleware(["ADMIN"]), controller.getUsers)
 router.get('/auth', authMiddleware, controller.check)
 router.get('/userinfo', authMiddleware, controller.getUserInfo);
 router.get('/userdata', authMiddleware, controller.getUserData);
 router.get('/alltickets', authMiddleware, controller.getAllTickets);
 router.get('/ticketdata/:id', authMiddleware, controller.getTicketData);
 router.put('/closeticket/:id', authMiddleware, controller.closeTicket);
+router.delete('/notifications/:id', authMiddleware, controller.deleteNotification);
 
 module.exports = router

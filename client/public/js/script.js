@@ -315,20 +315,38 @@ var content = '\
 <div class="card bg-light text-black mb-3"><div class="card-header">Notification Title</div><div class="card-body"><p class="card-text">Date: January 7, 2023</p></div></div>\
 ';
 
-$(function () {
-  $('[data-toggle="popover"]').popover({
-    placement: 'auto',
-    trigger: 'click',
-    html: true,
-    content: content
-  });
+function createPopoverWithContent(content) {
+  $(function () {
+    $('[data-toggle="popover"]').popover({
+      placement: 'auto',
+      trigger: 'click',
+      html: true,
+      content: content,
+      container: 'body',
+      sanitize: false,
+    });
 
-  $(document).click(function (event) {
-    if (!$(event.target).closest('[data-toggle="popover"]').length && !$(event.target).closest('.popover').length) {
-      $('[data-toggle="popover"]').popover('hide');
-    }
+    $(document).click(function (event) {
+      if (!$(event.target).closest('[data-toggle="popover"]').length && !$(event.target).closest('.popover').length) {
+        $('[data-toggle="popover"]').popover('hide');
+      }
+    });
+
+    $('[data-toggle="popover"]').on('shown.bs.popover', () => {
+      document.querySelectorAll('.goto-ticket-btn').forEach((button) => {
+        button.addEventListener('click', async (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          const notificationId = event.target.dataset.id;
+          await deleteNotification(notificationId);
+          window.location.href = event.target.href;
+        });
+      });
+    });
   });
-});
+}
+
+
 
 
 
@@ -363,7 +381,7 @@ window.addEventListener('DOMContentLoaded', async () => {
           'Authorization': `Bearer ${token}`,
         },
       });
-  
+
       if (response.ok) {
         const data = await response.json();
 
@@ -386,7 +404,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         const unreadNotificationsCount = data.notifications.filter(
           (notification) => !notification.isRead
         ).length;
-      
+
         const notifyLinks = document.querySelectorAll('.notify-linkclass');
         notifyLinks.forEach((notifyLink) => {
           const notifyBadge = notifyLink.querySelector('.badge.badge-pill.badge-primary');
@@ -394,6 +412,14 @@ window.addEventListener('DOMContentLoaded', async () => {
             notifyBadge.textContent = unreadNotificationsCount;
           }
         });
+
+        const notificationsContent = data.notifications
+          .map(notification => notificationToCard(notification))
+          .join('');
+
+        createPopoverWithContent(notificationsContent);
+
+
 
 
       } else {
@@ -427,7 +453,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  loadAllTickets(1, 10, '', 'authorUsername', 'open', '', '');
 
 });
 
@@ -467,7 +492,7 @@ async function loadAllTickets(page = 1, limit = 10, search = '', searchBy = '', 
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-      });           
+      });
 
       if (response.ok) {
         const data = await response.json();
@@ -613,5 +638,45 @@ function formatDate(dateString) {
   const seconds = String(date.getSeconds()).padStart(2, '0');
 
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
+
+function notificationToCard(notification) {
+  const date = new Date(notification.date).toLocaleDateString();
+  const title = notification.type;
+  const message = notification.message;
+  const ticketId = notification.ticketId;
+
+
+  return `
+    <div class="card bg-light text-black mb-2" style="max-width: 15rem;">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>${title}</span>
+      </div>
+      <div class="card-body">
+        <h6 class="card-title">${message}</h6>
+        <p class="card-text">Дата: ${new Date(notification.date).toLocaleString()}</p>
+        <a href="/page/${ticketId}" class="btn btn-sm btn-info goto-ticket-btn" data-id="${notification._id}">Перейти к тикету</a>
+      </div>
+    </div>
+  `;
+}
+
+async function deleteNotification(notificationId) {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`/auth/notifications/${notificationId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      console.error('Ошибка удаления уведомления');
+    }
+  } catch (error) {
+    console.error('Ошибка при удалении уведомления:', error);
+  }
 }
 

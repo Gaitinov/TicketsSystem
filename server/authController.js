@@ -63,19 +63,6 @@ class authController {
     }
   }
 
-  async getUsers(req, res) {
-    try {
-      const userRole = new Role()
-      const adminRole = new Role({ value: "ADMIN" })
-      await userRole.save()
-      await adminRole.save()
-      const users = await User.find()
-      res.json(users)
-    } catch (e) {
-      console.log(e)
-    }
-  }
-
   async check(req, res, next) {
     const token = generateJwt(req.user.id, req.user.role)
     return res.json({ token })
@@ -264,7 +251,7 @@ class authController {
         await this.addAdminNotificationToUser(
           ticket.author,
           ticket._id,
-          `Администратор добавил сообщение к вашему тикету: ${ticket.title}.`
+          `Администратор добавил сообщение к вашему тикету`
         );
       }
   
@@ -325,8 +312,30 @@ class authController {
       res.status(500).json({ message: "Ошибка сервера" });
     }
   }
-  
 
+
+  async deleteNotification(req, res) {
+    try {
+      const user = await User.findOne({ _id: req.user.id });
+  
+      if (!user) {
+        return res.status(404).json({ message: `Пользователь не найден` });
+      }
+  
+      user.notifications = user.notifications.filter(
+        (notification) => notification._id.toString() !== req.params.id
+      );
+  
+      await user.save();
+  
+      res.json({ message: "Уведомление удалено" });
+    } catch (e) {
+      console.log(e);
+      res.status(500).json({ message: "Ошибка при удалении уведомления" });
+    }
+  }
+  
+  
 }
 
 module.exports = new authController()
