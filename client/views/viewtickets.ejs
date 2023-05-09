@@ -2,33 +2,33 @@
     <h2>Sort and Search</h2>
     <form id="filter-form">
         <div class="form-group">
-            <label for="search-input">Search:</label>
-            <input type="text" class="form-control" id="search-input" placeholder="Enter search">
+          <label for="search-input">Search:</label>
+          <input type="text" class="form-control" id="search-input" name="search" placeholder="Enter search">
         </div>
         <div class="form-group">
-            <label for="sort-by">Sort by:</label>
-            <select class="form-control" id="sort-by">
-                <option>Username</option>
-                <option>Topic Name</option>
-            </select>
+          <label for="sort-by">Sort by:</label>
+          <select class="form-control" id="sort-by" name="sortBy">
+            <option value="authorUsername">Username</option>
+            <option value="title">Title</option>
+          </select>
         </div>
         <div class="form-group">
-            <label for="status">Status:</label>
-            <select class="form-control" id="status">
-                <option>Open</option>
-                <option>Closed</option>
-            </select>
+          <label for="status">Status:</label>
+          <select class="form-control" id="status" name="status">
+            <option value="open">Open</option>
+            <option value="closed">Closed</option>
+          </select>
         </div>
         <div class="form-group">
-            <label for="start-date">Start Date:</label>
-            <input type="date" class="form-control" id="start-date">
+          <label for="start-date">Start Date:</label>
+          <input type="date" class="form-control" id="start-date" name="startDate">
         </div>
         <div class="form-group">
-            <label for="end-date">End Date:</label>
-            <input type="date" class="form-control" id="end-date">
+          <label for="end-date">End Date:</label>
+          <input type="date" class="form-control" id="end-date" name="endDate">
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+      </form>      
 </div>
 
 
