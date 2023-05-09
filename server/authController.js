@@ -111,7 +111,7 @@ class authController {
   async getAllTickets(req, res) {
     try {
       const user = await User.findOne({ _id: req.user.id });
-      const sortBy = req.query.sortBy || "authorUsername";
+      const searchBy = req.query.searchBy || "authorUsername";
   
       if (!user) {
         return res.status(404).json({ message: `Пользователь не найден` });
@@ -129,17 +129,14 @@ class authController {
         const startDate = req.query.startDate ? new Date(req.query.startDate) : '';
         const endDate = req.query.endDate ? new Date(req.query.endDate) : '';
   
-        const sortOption = sortBy === "title" ? { title: 1 } : { authorUsername: 1 };
+        const searchOption = searchBy === "title" ? { title: { $regex: search, $options: 'i' } } : { authorUsername: { $regex: search, $options: 'i' } };
   
         // Создайте объект для хранения фильтров
         const filters = {};
   
         // Добавьте фильтры поиска, статуса, даты начала и даты окончания
         if (search) {
-          filters.$or = [
-            { authorUsername: { $regex: search, $options: 'i' } },
-            { title: { $regex: search, $options: 'i' } },
-          ];
+          filters[searchBy] = searchOption[searchBy];
         }
   
         if (status) {
@@ -154,7 +151,7 @@ class authController {
           filters.date = { $lte: endDate };
         }
   
-        const allTickets = await Ticket.find(filters).sort(sortOption).skip(skip).limit(limit);
+        const allTickets = await Ticket.find(filters).skip(skip).limit(limit);
         const totalTickets = await Ticket.countDocuments(filters);
   
         res.json({ message: "Все тикеты получены", data: allTickets, total: totalTickets });

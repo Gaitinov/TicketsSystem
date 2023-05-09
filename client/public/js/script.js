@@ -407,17 +407,17 @@ window.addEventListener('DOMContentLoaded', async () => {
 
       // Получите значения полей формы
       const search = document.getElementById('search-input').value;
-      const sortBy = document.getElementById('sort-by').value;
+      const searchBy = document.getElementById('search-by').value;
       const status = document.getElementById('status').value;
       const startDate = document.getElementById('start-date').value;
       const endDate = document.getElementById('end-date').value;
 
       // Загрузите тикеты с учетом фильтров и сортировки
-      loadAllTickets(1, 10, search, sortBy, status, startDate, endDate);
+      loadAllTickets(1, 10, search, searchBy, status, startDate, endDate);
     });
   }
 
-  loadAllTickets();
+  loadAllTickets(1, 10, '', 'authorUsername', 'open', '', '');
 
 });
 
@@ -426,7 +426,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 
 
-async function loadAllTickets(page = 1, limit = 10, search = '', sortBy = '', status = '', startDate = '', endDate = '') {
+async function loadAllTickets(page = 1, limit = 10, search = '', searchBy = '', status = '', startDate = '', endDate = '') {
   const token = localStorage.getItem('token');
   const url = new URL(`/auth/alltickets`, window.location.origin);
 
@@ -435,7 +435,7 @@ async function loadAllTickets(page = 1, limit = 10, search = '', sortBy = '', st
     page,
     limit,
     search,
-    sortBy,
+    searchBy,
     status,
     startDate,
     endDate
