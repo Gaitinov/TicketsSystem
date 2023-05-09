@@ -111,6 +111,7 @@ class authController {
   async getAllTickets(req, res) {
     try {
       const user = await User.findOne({ _id: req.user.id });
+      const sortBy = req.query.sortBy || "authorUsername";
   
       if (!user) {
         return res.status(404).json({ message: `Пользователь не найден` });
@@ -123,8 +124,38 @@ class authController {
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
   
-        const allTickets = await Ticket.find().skip(skip).limit(limit);
-        const totalTickets = await Ticket.countDocuments();
+        const search = req.query.search || '';
+        const status = req.query.status || '';
+        const startDate = req.query.startDate ? new Date(req.query.startDate) : '';
+        const endDate = req.query.endDate ? new Date(req.query.endDate) : '';
+  
+        const sortOption = sortBy === "title" ? { title: 1 } : { authorUsername: 1 };
+  
+        // Создайте объект для хранения фильтров
+        const filters = {};
+  
+        // Добавьте фильтры поиска, статуса, даты начала и даты окончания
+        if (search) {
+          filters.$or = [
+            { authorUsername: { $regex: search, $options: 'i' } },
+            { title: { $regex: search, $options: 'i' } },
+          ];
+        }
+  
+        if (status) {
+          filters.status = status;
+        }
+  
+        if (startDate && endDate) {
+          filters.date = { $gte: startDate, $lte: endDate };
+        } else if (startDate) {
+          filters.date = { $gte: startDate };
+        } else if (endDate) {
+          filters.date = { $lte: endDate };
+        }
+  
+        const allTickets = await Ticket.find(filters).sort(sortOption).skip(skip).limit(limit);
+        const totalTickets = await Ticket.countDocuments(filters);
   
         res.json({ message: "Все тикеты получены", data: allTickets, total: totalTickets });
       } else {
@@ -135,6 +166,8 @@ class authController {
       res.status(500).json({ message: "Ошибка сервера" });
     }
   }
+  
+  
   
   
 

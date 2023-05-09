@@ -401,25 +401,29 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 
   if (location.hash === '#viewtickets') {
-    loadAllTickets();
+
+    document.getElementById('filter-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      // Получите значения полей формы
+      const search = document.getElementById('search-input').value;
+      const sortBy = document.getElementById('sort-by').value;
+      const status = document.getElementById('status').value;
+      const startDate = document.getElementById('start-date').value;
+      const endDate = document.getElementById('end-date').value;
+
+      // Загрузите тикеты с учетом фильтров и сортировки
+      loadAllTickets(1, 10, search, sortBy, status, startDate, endDate);
+    });
   }
 
+  loadAllTickets();
+
 });
 
 
-document.getElementById('filter-form').addEventListener('submit', async (event) => {
-  event.preventDefault();
 
-  // Получите значения полей формы
-  const search = document.getElementById('search-input').value;
-  const sortBy = document.getElementById('sort-by').value;
-  const status = document.getElementById('status').value;
-  const startDate = document.getElementById('start-date').value;
-  const endDate = document.getElementById('end-date').value;
 
-  // Загрузите тикеты с учетом фильтров и сортировки
-  loadAllTickets(1, 10, search, sortBy, status, startDate, endDate);
-});
 
 
 async function loadAllTickets(page = 1, limit = 10, search = '', sortBy = '', status = '', startDate = '', endDate = '') {
@@ -428,30 +432,32 @@ async function loadAllTickets(page = 1, limit = 10, search = '', sortBy = '', st
 
   // Добавьте параметры запроса
   const params = {
-      page,
-      limit,
-      search,
-      sortBy,
-      status,
-      startDate,
-      endDate
+    page,
+    limit,
+    search,
+    sortBy,
+    status,
+    startDate,
+    endDate
   };
 
   Object.keys(params).forEach(key => {
-      if (params[key]) {
-          url.searchParams.append(key, params[key]);
-      }
+    if (params[key]) {
+      url.searchParams.append(key, params[key]);
+    }
   });
+
+  console.log('Параметры запроса:', url.search);
 
   if (token) {
     try {
-      const response = await fetch(`/auth/alltickets?page=${page}&limit=${limit}`, {
+      const response = await fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-      });
+      });           
 
       if (response.ok) {
         const data = await response.json();
