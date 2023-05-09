@@ -30,6 +30,10 @@ a.nav-link.disabled {
   cursor: default;
 }
 
+.notify-linkclass:hover {
+  text-decoration: none;
+}
+
 
 
 

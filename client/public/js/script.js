@@ -311,9 +311,8 @@ logoutButtonTelephone.addEventListener('click', function () {
 
 
 
-var content = '<div class="alert alert-primary alert-xs" role="alert"><h4 class="alert-heading">Notification Title</h4><p>Date: January 7, 2023</p></div>\
+var content = '\
 <div class="card bg-light text-black mb-3"><div class="card-header">Notification Title</div><div class="card-body"><p class="card-text">Date: January 7, 2023</p></div></div>\
-<div class="alert alert-secondary text-dark font-weight-bold" role="alert"><h4 class="alert-heading">Notification Title</h4><p>Date: January 7, 2023</p></div>\
 ';
 
 $(function () {
@@ -364,7 +363,7 @@ window.addEventListener('DOMContentLoaded', async () => {
           'Authorization': `Bearer ${token}`,
         },
       });
-
+  
       if (response.ok) {
         const data = await response.json();
 
@@ -384,6 +383,17 @@ window.addEventListener('DOMContentLoaded', async () => {
           }
         });
 
+        const unreadNotificationsCount = data.notifications.filter(
+          (notification) => !notification.isRead
+        ).length;
+      
+        const notifyLinks = document.querySelectorAll('.notify-linkclass');
+        notifyLinks.forEach((notifyLink) => {
+          const notifyBadge = notifyLink.querySelector('.badge.badge-pill.badge-primary');
+          if (notifyBadge) {
+            notifyBadge.textContent = unreadNotificationsCount;
+          }
+        });
 
 
       } else {

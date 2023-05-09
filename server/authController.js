@@ -88,7 +88,12 @@ class authController {
       if (!user) {
         return res.status(404).json({ message: `Пользователь не найден` });
       }
-      res.json({ message: "Информация о пользователе получена", username: user.username, roles: user.roles });
+      res.json({
+        message: "Информация о пользователе получена",
+        username: user.username,
+        roles: user.roles,
+        notifications: user.notifications,
+      });
     } catch (e) {
       console.log(e);
       res.status(403).json({ message: "Пользователь не авторизован" });
