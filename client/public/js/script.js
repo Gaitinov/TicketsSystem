@@ -226,8 +226,8 @@ async function attachSubmitButtonListener() {
         } else {
           // Произошла ошибка при создании тикета
           const errorData = await response.json();
-          if (errorData.message === 'Вы не можете создать больше 3 тикетов') {
-            alert('Вы не можете создать больше 3 тикетов');
+          if (errorData.message === 'Вы не можете создать больше 3 открытых тикетов') {
+            alert('Вы не можете создать больше 3 открытых тикетов');
           } else {
             alert('Ошибка при создании тикета');
           }
@@ -334,6 +334,8 @@ $(function () {
 
 
 
+
+
 document.querySelector('#loginButton').addEventListener('click', function () {
   $('#navbarNav').collapse('toggle');
   $('#loginModal').modal('show');
@@ -405,8 +407,41 @@ window.addEventListener('DOMContentLoaded', async () => {
 });
 
 
-async function loadAllTickets(page = 1, limit = 10) {
+document.getElementById('filter-form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  // Получите значения полей формы
+  const search = document.getElementById('search-input').value;
+  const sortBy = document.getElementById('sort-by').value;
+  const status = document.getElementById('status').value;
+  const startDate = document.getElementById('start-date').value;
+  const endDate = document.getElementById('end-date').value;
+
+  // Загрузите тикеты с учетом фильтров и сортировки
+  loadAllTickets(1, 10, search, sortBy, status, startDate, endDate);
+});
+
+
+async function loadAllTickets(page = 1, limit = 10, search = '', sortBy = '', status = '', startDate = '', endDate = '') {
   const token = localStorage.getItem('token');
+  const url = new URL(`/auth/alltickets`, window.location.origin);
+
+  // Добавьте параметры запроса
+  const params = {
+      page,
+      limit,
+      search,
+      sortBy,
+      status,
+      startDate,
+      endDate
+  };
+
+  Object.keys(params).forEach(key => {
+      if (params[key]) {
+          url.searchParams.append(key, params[key]);
+      }
+  });
 
   if (token) {
     try {
@@ -563,3 +598,4 @@ function formatDate(dateString) {
 
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
+

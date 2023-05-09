@@ -167,17 +167,21 @@ class authController {
       const { title, description } = req.body;
       const userId = req.user.id;
   
+      // Найти пользователя по userId
+      const user = await User.findById(userId);
+  
       // Найти количество тикетов, созданных данным пользователем
       const userTicketCount = await Ticket.countDocuments({ author: userId });
   
       // Проверить, превышено ли максимальное количество тикетов (3)
       if (userTicketCount >= 3) {
-        return res.status(400).json({ message: 'Вы не можете создать больше 3 тикетов' });
+        return res.status(400).json({ message: 'Вы не можете создать больше 3 открытых тикетов' });
       }
   
       const newTicket = new Ticket({
         title: title,
         author: userId,
+        authorUsername: user.username, // добавить username автора
         date: new Date(),
         description: description,
         messages: []
@@ -191,6 +195,7 @@ class authController {
       res.status(500).json({ message: 'Ошибка сервера' });
     }
   }
+  
   
 
   async addMessageToTicket(req, res) {

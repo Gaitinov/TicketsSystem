@@ -21,6 +21,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         const data = await response.json();
         const item = data.data;
         const isAdmin = data.isAdmin;
+        const authorUsername = item.authorUsername;
 
         const isClosed = item.status === 'closed';
 
@@ -45,7 +46,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                   <div class="container mt-4 position-relative">
                     <div class="row border p-3">
                       <div class="col-sm-3 align-self-center mt-2 text-center">
-                        <h5 class="mb-5 mt-2">User</h5>
+                        <h5 class="mb-5 mt-2">${authorUsername}</h5>
                       </div>
             
                       <div class="col-sm-9 align-self-start mt-2">
@@ -63,6 +64,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
         let messageHtml = '';
 
+
         item.messages.forEach(message => {
           const formattedDate = formatDate(message.date);
           const isUserMessage = message.sender === item.author;
@@ -70,9 +72,9 @@ window.addEventListener('DOMContentLoaded', async () => {
           messageHtml += `
       <div class="container mt-4">
         <div class="row border p-3 ${isUserMessage ? 'user-block' : 'admin-block'}">
-          <div class="col-sm-3 align-self-center mt-2 text-center">
-            <h5 class="mb-5 mt-2">${isUserMessage ? 'User' : 'Admin'}</h5>
-          </div>
+        <div class="col-sm-3 align-self-center mt-2 text-center">
+        <h5 class="mb-5 mt-2">${isUserMessage ? authorUsername : 'Admin'}</h5>
+      </div>      
           <div class="col-sm-9 align-self-start mt-2">
             <h5 class="text-muted mb-0">${formattedDate}</h5>
             <p class="mt-4">${message.content}</p>
@@ -166,7 +168,7 @@ async function closeTicket(token) {
   if (response.ok) {
     const data = await response.json();
     console.log('Тикет закрыт:', data);
-    // Здесь вы можете обновить пользовательский интерфейс, если это необходимо
+    location.reload();
   } else {
     console.error('Ошибка при закрытии тикета:', response.statusText);
   }
