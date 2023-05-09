@@ -228,15 +228,13 @@ class authController {
   
   
 
-  async addMessageToTicket(req, res) {
+  addMessageToTicket = async (req, res) => {
     try {
       const ticketId = req.params.id;
       const { content } = req.body;
       const userId = req.user.id;
   
       const ticket = await Ticket.findById(ticketId);
-
-      
   
       if (!ticket) {
         return res.status(404).json({ message: `Тикет не найден` });
@@ -245,7 +243,7 @@ class authController {
       if (ticket.status === 'closed') {
         return res.status(400).json({ message: 'Нельзя добавить сообщение к закрытому тикету' });
       }
-
+  
       const isAdmin = req.user.roles.includes('ADMIN');
       if (userId !== ticket.author.toString() && !isAdmin) {
         return res.status(403).json({ message: 'У вас нет прав на добавление сообщения к этому тикету' });
@@ -257,6 +255,14 @@ class authController {
         date: new Date()
       };
   
+      if (isAdmin) {
+        await this.addAdminNotificationToUser(
+          ticket.author,
+          ticket._id,
+          `Администратор добавил сообщение к вашему тикету: ${ticket.title}.`
+        );
+      }
+  
       // Добавляем сообщение к тикету и сохраняем
       ticket.messages.push(newMessage);
       await ticket.save();
@@ -267,6 +273,27 @@ class authController {
       res.status(500).json({ message: "Ошибка сервера" });
     }
   }
+  
+  async addAdminNotificationToUser(userId, ticketId, message) {
+    try {
+      const notification = {
+        ticketId,
+        type: 'INFO',
+        message,
+        isRead: false,
+        date: new Date()
+      };
+  
+      await User.updateOne(
+        { _id: userId },
+        { $push: { notifications: notification } }
+      );
+    } catch (e) {
+      console.log(e);
+    }
+}
+
+  
   
 
   async closeTicket(req, res) {
