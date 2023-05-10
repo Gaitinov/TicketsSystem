@@ -148,7 +148,7 @@ document.querySelectorAll(".link-item a").forEach(link => {
     }
 
     if (window.location.hash === '#viewtickets') {
-      loadAllTickets();
+      loadAllTickets(1, 10);
     }
 
   });
@@ -178,7 +178,9 @@ async function start() {
     });
   }
 
-
+  if (window.location.hash === '#viewtickets') {
+    loadAllTickets(1, 10);
+  }
 
   if (token) {
     try {
@@ -240,16 +242,16 @@ async function attachSubmitButtonListener() {
       const token = localStorage.getItem('token');
 
       const title = document.getElementById('subject').value;
-      const description = $('#summernote').summernote('code');
+      const strippedTitle = title.replace(/(<([^>]+)>)/gi, "").replace(/&nbsp;/g, ' ');
 
-      // Удаляем все HTML-теги и заменяем неразрывные пробелы на обычные пробелы
+      const description = $('#summernote').summernote('code');
       const strippedContent = description.replace(/(<([^>]+)>)/gi, "").replace(/&nbsp;/g, ' ');
 
-      // Проверка, что оба поля заполнены
-      if (!title || !strippedContent.trim()) {
+      if (!strippedTitle.trim() || !strippedContent.trim()) {
         alert('Пожалуйста, заполните все поля');
         return;
       }
+
 
       const ticketData = {
         title: title,
@@ -456,18 +458,23 @@ window.addEventListener('DOMContentLoaded', async () => {
         const unreadNotificationsCount = data.notifications.filter(
           (notification) => !notification.isRead
         ).length;
-
+        
         const notifyLinks = document.querySelectorAll('.notify-linkclass');
         notifyLinks.forEach((notifyLink) => {
           const notifyBadge = notifyLink.querySelector('.badge.badge-pill.badge-primary');
           if (notifyBadge) {
-            notifyBadge.textContent = unreadNotificationsCount;
+            if (unreadNotificationsCount > 0) {
+              notifyBadge.textContent = unreadNotificationsCount;
+            } else {
+              notifyBadge.textContent = ""; // или вы можете скрыть значок уведомления полностью, используя notifyBadge.style.display = "none";
+            }
           }
         });
-
+        
         const notificationsContent = data.notifications
           .map(notification => notificationToCard(notification))
           .join('');
+        
 
         createPopoverWithContent(notificationsContent);
 
@@ -505,6 +512,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  loadAllTickets(1, 10);
 
 });
 
