@@ -22,7 +22,6 @@ document.querySelector('#loginButton1').addEventListener('click', async function
     errorMessage.style.display = 'none';
     const username = document.querySelector('#loginUsername').value;
     const password = document.querySelector('#loginPassword').value;
-    const rememberMe = document.querySelector('#loginRememberMe').checked;
 
     try {
       const response = await fetch('/auth/login', {
@@ -130,7 +129,7 @@ window.addEventListener('beforeunload', () => {
   }
 });
 
-document.querySelectorAll("#linkitemli a").forEach(link => {
+document.querySelectorAll(".link-item a").forEach(link => {
   link.addEventListener("click", async function (event) {
     event.preventDefault();
 
@@ -155,7 +154,7 @@ document.querySelectorAll("#linkitemli a").forEach(link => {
   });
 });
 
-
+// Добавления контента на страницу от хэша
 async function start() {
   let hash = window.location.hash;
   hash = hash.substring(1);
@@ -164,6 +163,59 @@ async function start() {
   }
   let data = await fetch(`${hash}.ejs`);
   document.querySelector("#containermain").innerHTML = await data.text();
+
+  const token = localStorage.getItem('token');
+
+  if (!token) {
+    document.querySelector('#loginButton2').addEventListener('click', function () {
+      $('#navbarNav').collapse('toggle');
+      $('#loginModal').modal('show');
+    });
+
+    document.querySelector('#registerButton2').addEventListener('click', function () {
+      $('#navbarNav').collapse('toggle');
+      $('#registerModal').modal('show');
+    });
+  }
+
+
+
+  if (token) {
+    try {
+
+      if (window.location.hash == "#main" || location.hash === '') {
+        const h2Element = document.querySelector('#h2recenttickets');
+        h2Element.classList.remove('d-none');
+        const containerElement = document.querySelector('div.container-fluid.p-0.mt-4.d-flex.justify-content-center.d-none');
+        containerElement.classList.remove('d-none');
+        const spinnerBorderElement = document.querySelector('div.spinner-border.d-none');
+        spinnerBorderElement.classList.remove('d-none');
+        const formcreateticketElement = document.querySelector('form#ticket-form.d-none');
+        formcreateticketElement.classList.remove("d-none")
+        const block = document.querySelector('#blockloginregistor');
+        const loginButton2 = block.querySelector('#loginButton2');
+        const registerButton2 = block.querySelector('#registerButton2');
+        loginButton2.classList.add('d-none');
+        registerButton2.classList.add('d-none');
+        const orText = block.querySelector('#orelement');
+        orText.classList.add('d-none');
+        loadUserData();
+      }
+
+      const liElement1 = document.querySelector('li#linkitemli1.nav-item');
+      liElement1.classList.remove('d-none');
+      const aElement1 = liElement1.querySelector('a.nav-link');
+      aElement1.classList.remove('d-none');
+      const liElement2 = document.querySelector('li#linkitemli2.nav-item');
+      liElement2.classList.remove('d-none');
+      const aElement2 = liElement2.querySelector('a.nav-link');
+      aElement2.classList.remove('d-none');
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+
 
   // Инициализация Summernote
   $(document).ready(function () {
@@ -293,7 +345,6 @@ window.onload = function () {
     const nicknameTelephone = document.querySelector(`a[data-target='#nicknameTelephone']`);
     nicknameTelephone.classList.remove('d-none');
   }
-
 };
 
 
@@ -367,6 +418,7 @@ document.querySelector('#registerButton').addEventListener('click', function () 
 // Получение ника пользователя и данных вывода
 
 window.addEventListener('DOMContentLoaded', async () => {
+
 
   updateNavLinkState();
 
@@ -543,6 +595,8 @@ async function loadUserData() {
 
   const token = localStorage.getItem('token');
 
+
+
   if (token) {
     try {
       const response = await fetch('/auth/userdata', {
@@ -581,6 +635,9 @@ async function loadUserData() {
         });
 
         document.getElementById('ticketsupload').innerHTML = html;
+
+
+
 
 
 

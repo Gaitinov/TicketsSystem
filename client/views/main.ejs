@@ -7,35 +7,40 @@
             you.
             If you have any relevant information or documents, please attach them to your message.
             Thank you for your cooperation..</p>
-        <h2 class="mb-4">Recent Tickets:</h2>
+        <h2 class="mb-4 d-none" id="h2recenttickets">Recent Tickets:</h2>
         <hr>
+        <div class="d-flex flex-column align-items-center" id="blockloginregistor">
+            <button id="loginButton2" class="btn btn-primary btn-lg mx-auto mt-3 mb-3">Войдите</button>
+            <div class="my-3 h3" id="orelement">или</div>
+            <button id="registerButton2" class="btn btn-danger btn-lg mx-auto mt-3 mb-3">Зарегистрируйтесь</button>
+          </div>               
     </div>
 </div>
 
-<div class="container-fluid p-0 mt-4 d-flex justify-content-center">
+<div class="container-fluid p-0 mt-4 d-flex justify-content-center d-none">
     <div class="col-md-8">
 
         <div id="ticketsupload">
 
             <div class="d-flex justify-content-center">
-                <div class="spinner-border" role="status">
+                <div class="spinner-border d-none" role="status">
                     <span class="sr-only">Loading...</span>
                 </div>
             </div>
 
         </div>
 
-        <form class="pt-2" id="ticket-form">
+        <form class="pt-2 d-none" id="ticket-form">
             <div class="form-group">
                 <label for="subject">Тема</label>
                 <input type="text" class="form-control" id="subject" placeholder="Введите тему">
             </div>
-        
+
             <div class="form-group">
                 <div id="summernote"></div>
             </div>
             <button type="button" class="btn btn-primary" id="submit-button">Отправить</button>
-        </form>        
+        </form>
 
     </div>
 </div>

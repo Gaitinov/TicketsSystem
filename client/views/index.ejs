@@ -72,8 +72,8 @@
                     <a class="nav-link text-center " onclick="updateHash('viewtickets')" data-hash="viewtickets"
                         data-toggle="collapse" data-target="#navbarNav">View Tickets</a>
                 </li>
-                <li class="nav-item" id="linkitemli">
-                    <a class="nav-link text-center" onclick="updateHash('createticket')" data-hash="createticket"
+                <li class="nav-item" id="linkitemli1">
+                    <a class="nav-link text-center d-none" onclick="updateHash('createticket')" data-hash="createticket"
                         data-toggle="collapse" data-target="#navbarNav">Submit a Ticket</a>
                 </li>
                 <li class="nav-item p-1 ">
@@ -89,7 +89,7 @@
                 <li class="nav-item admin-only d-none" id="linkitemli">
                     <a class="nav-link" onclick="updateHash('viewtickets')" data-hash="viewtickets">View Tickets</a>
                 </li>
-                <li class="nav-item" id="linkitemli">
+                <li class="nav-item d-none" id="linkitemli2">
                     <a class="nav-link" onclick="updateHash('createticket')" data-hash="createticket">Submit a
                         Ticket</a>
                 </li>
@@ -129,7 +129,7 @@
     <div id="containermain"></div>
 
     <footer class="bg-light py-3 mt-5">
-        <div class="container text-center text-dark">
+        <div class="container text-center text-dark mt-5">
             Copyright 2022 Support Ticketing System
         </div>
     </footer>
@@ -157,10 +157,6 @@
                         <div class="form-group">
                             <label for="loginPassword" class="col-form-label">Password:</label>
                             <input type="password" class="form-control" id="loginPassword">
-                        </div>
-                        <div class="form-group form-check">
-                            <input type="checkbox" class="form-check-input" id="loginRememberMe">
-                            <label class="form-check-label" for="loginRememberMe">Remember me</label>
                         </div>
                         <button type="submit" class="btn btn-primary" id="loginButton1">Submit</button>
                     </form>
