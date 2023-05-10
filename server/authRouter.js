@@ -26,6 +26,7 @@ router.get('/userdata', authMiddleware, controller.getUserData);
 router.get('/alltickets', authMiddleware, controller.getAllTickets);
 router.get('/ticketdata/:id', authMiddleware, controller.getTicketData);
 router.put('/closeticket/:id', authMiddleware, controller.closeTicket);
+router.put('/openticket/:id', authMiddleware, controller.openTicket);
 router.delete('/notifications/:id', authMiddleware, controller.deleteNotification);
 
 module.exports = router

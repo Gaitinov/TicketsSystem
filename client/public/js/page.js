@@ -96,6 +96,8 @@ window.addEventListener('DOMContentLoaded', async () => {
 
           const submitContainer = document.getElementById('Containesubmit');
           submitContainer.classList.add('d-none');
+          const openTicketbutton = document.getElementById('open-ticket');
+          openTicketbutton.classList.remove('d-none');
         }
 
 
@@ -151,10 +153,29 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 
   document.getElementById('confirmClose').addEventListener('click', () => closeTicket(token));
+  document.getElementById('open-ticket').addEventListener('click', () => openTicket(token));
 
 
 });
 
+
+async function openTicket(token) {
+  const response = await fetch(`/auth/openticket/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+    console.log('Тикет открыт:', data);
+    location.reload();
+  } else {
+    console.error('Ошибка при открытии тикета:', response.statusText);
+  }
+}
 
 async function closeTicket(token) {
   const response = await fetch(`/auth/closeticket/${id}`, {

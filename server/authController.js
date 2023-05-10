@@ -104,37 +104,37 @@ class authController {
     try {
       const user = await User.findOne({ _id: req.user.id });
       const searchBy = req.query.searchBy || "authorUsername";
-  
+
       if (!user) {
         return res.status(404).json({ message: `Пользователь не найден` });
       }
-  
+
       const isAdmin = user.roles.includes('ADMIN');
-  
+
       if (isAdmin) {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
-  
+
         const search = req.query.search || '';
         const status = req.query.status || '';
         const startDate = req.query.startDate ? new Date(req.query.startDate) : '';
         const endDate = req.query.endDate ? new Date(req.query.endDate) : '';
-  
+
         const searchOption = searchBy === "title" ? { title: { $regex: search, $options: 'i' } } : { authorUsername: { $regex: search, $options: 'i' } };
-  
+
         // Создайте объект для хранения фильтров
         const filters = {};
-  
+
         // Добавьте фильтры поиска, статуса, даты начала и даты окончания
         if (search) {
           filters[searchBy] = searchOption[searchBy];
         }
-  
+
         if (status) {
           filters.status = status;
         }
-  
+
         if (startDate && endDate) {
           filters.date = { $gte: startDate, $lte: endDate };
         } else if (startDate) {
@@ -142,10 +142,10 @@ class authController {
         } else if (endDate) {
           filters.date = { $lte: endDate };
         }
-  
+
         const allTickets = await Ticket.find(filters).skip(skip).limit(limit);
         const totalTickets = await Ticket.countDocuments(filters);
-  
+
         res.json({ message: "Все тикеты получены", data: allTickets, total: totalTickets });
       } else {
         res.status(403).json({ message: "Доступ запрещен. Только администраторы могут получить все тикеты" });
@@ -155,23 +155,23 @@ class authController {
       res.status(500).json({ message: "Ошибка сервера" });
     }
   }
-  
-  
-  
-  
+
+
+
+
 
   async getTicketData(req, res) {
     try {
       const ticketId = req.params.id;
       const ticket = await Ticket.findById(ticketId);
-  
+
       if (!ticket) {
         return res.status(404).json({ message: `Тикет не найден` });
       }
-  
+
       const user = await User.findById(req.user.id);
       const isAdmin = user.roles.includes('ADMIN');
-  
+
       if (ticket.author.toString() === req.user.id || isAdmin) {
         res.json({ message: "Данные тикета получены", data: ticket, isAdmin: isAdmin });
       } else {
@@ -182,24 +182,24 @@ class authController {
       res.status(500).json({ message: "Ошибка сервера" });
     }
   }
-  
 
-  async createTicket(req, res) {
+
+  createTicket = async (req, res) => {
     try {
       const { title, description } = req.body;
       const userId = req.user.id;
-  
+
       // Найти пользователя по userId
       const user = await User.findById(userId);
-  
+
       // Найти количество тикетов, созданных данным пользователем
       const userTicketCount = await Ticket.countDocuments({ author: userId });
-  
+
       // Проверить, превышено ли максимальное количество тикетов (3)
       if (userTicketCount >= 3) {
         return res.status(400).json({ message: 'Вы не можете создать больше 3 открытых тикетов' });
       }
-  
+
       const newTicket = new Ticket({
         title: title,
         author: userId,
@@ -208,45 +208,55 @@ class authController {
         description: description,
         messages: []
       });
-  
+
       await newTicket.save();
+
+      const admins = await User.find({ roles: 'ADMIN' });
+      for (const admin of admins) {
+        await this.addAdminNotificationToUser(
+          admin._id,
+          newTicket._id,
+          `Создан новый тикет "${newTicket.title}" от пользователя ${user.username}`
+        );
+      }
+
       res.status(201).json({ message: 'Тикет успешно создан', data: newTicket });
-  
+
     } catch (e) {
       console.log(e);
       res.status(500).json({ message: 'Ошибка сервера' });
     }
   }
-  
-  
+
+
 
   addMessageToTicket = async (req, res) => {
     try {
       const ticketId = req.params.id;
       const { content } = req.body;
       const userId = req.user.id;
-  
+
       const ticket = await Ticket.findById(ticketId);
-  
+
       if (!ticket) {
         return res.status(404).json({ message: `Тикет не найден` });
       }
-  
+
       if (ticket.status === 'closed') {
         return res.status(400).json({ message: 'Нельзя добавить сообщение к закрытому тикету' });
       }
-  
+
       const isAdmin = req.user.roles.includes('ADMIN');
       if (userId !== ticket.author.toString() && !isAdmin) {
         return res.status(403).json({ message: 'У вас нет прав на добавление сообщения к этому тикету' });
       }
-  
+
       const newMessage = {
         sender: userId,
         content,
         date: new Date()
       };
-  
+
       if (isAdmin) {
         await this.addAdminNotificationToUser(
           ticket.author,
@@ -254,18 +264,33 @@ class authController {
           `Администратор добавил сообщение к вашему тикету`
         );
       }
-  
+
+      if (!isAdmin) {
+        const messageSenders = ticket.messages
+          .filter(message => message.sender.toString() !== userId && message.sender.toString() !== ticket.author.toString())
+          .map(message => message.sender.toString());
+        const uniqueMessageSenders = [...new Set(messageSenders)];
+        for (const sender of uniqueMessageSenders) {
+          await this.addAdminNotificationToUser(
+            sender,
+            ticket._id,
+            `Пользователь ${ticket.authorUsername} добавил сообщение к тикету`
+          );
+        }
+      }
+
+
       // Добавляем сообщение к тикету и сохраняем
       ticket.messages.push(newMessage);
       await ticket.save();
-  
+
       res.json({ message: "Сообщение добавлено", data: ticket });
     } catch (e) {
       console.log(e);
       res.status(500).json({ message: "Ошибка сервера" });
     }
   }
-  
+
   async addAdminNotificationToUser(userId, ticketId, message) {
     try {
       const notification = {
@@ -275,7 +300,7 @@ class authController {
         isRead: false,
         date: new Date()
       };
-  
+
       await User.updateOne(
         { _id: userId },
         { $push: { notifications: notification } }
@@ -283,26 +308,33 @@ class authController {
     } catch (e) {
       console.log(e);
     }
-}
+  }
 
-  
-  
 
-  async closeTicket(req, res) {
+
+  closeTicket = async (req, res) => {
     try {
       const ticketId = req.params.id;
       const ticket = await Ticket.findById(ticketId);
-  
+
+
       if (!ticket) {
         return res.status(404).json({ message: `Тикет не найден` });
       }
-  
+
       const user = await User.findById(req.user.id);
       const isAdmin = user.roles.includes('ADMIN');
-  
+
       if (isAdmin) {
         ticket.status = 'closed';
         await ticket.save();
+      
+        await this.addAdminNotificationToUser(
+          ticket.author,
+          ticket._id,
+          `Администратор закрыл ваш тикет`
+        );
+
         res.json({ message: "Тикет закрыт", data: ticket });
       } else {
         res.status(403).json({ message: "Пользователь не авторизован" });
@@ -314,28 +346,54 @@ class authController {
   }
 
 
+  async openTicket(req, res) {
+    try {
+      const ticketId = req.params.id;
+      const ticket = await Ticket.findById(ticketId);
+
+      if (!ticket) {
+        return res.status(404).json({ message: `Тикет не найден` });
+      }
+
+      const user = await User.findById(req.user.id);
+
+      if (ticket.author.toString() === req.user.id) { // проверяем, что текущий пользователь является автором тикета
+        ticket.status = 'open';
+        await ticket.save();
+        res.json({ message: "Тикет открыт", data: ticket });
+      } else {
+        res.status(403).json({ message: "Вы не можете открыть этот тикет: вы не являетесь автором" });
+      }
+    } catch (e) {
+      console.log(e);
+      res.status(500).json({ message: "Ошибка сервера" });
+    }
+  }
+
+
+
   async deleteNotification(req, res) {
     try {
       const user = await User.findOne({ _id: req.user.id });
-  
+
       if (!user) {
         return res.status(404).json({ message: `Пользователь не найден` });
       }
-  
+
       user.notifications = user.notifications.filter(
         (notification) => notification._id.toString() !== req.params.id
       );
-  
+
       await user.save();
-  
+
       res.json({ message: "Уведомление удалено" });
     } catch (e) {
       console.log(e);
       res.status(500).json({ message: "Ошибка при удалении уведомления" });
     }
   }
-  
-  
+
+
 }
 
 module.exports = new authController()
