@@ -72,6 +72,55 @@ class authController {
     }
   }
 
+
+  async recoverPassword(req, res) {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Генерация токена сброса пароля
+        const resetToken = jwt.sign({ userId: user.id }, secret, { expiresIn: '1h' });
+
+        // Обновление пользователя с новым токеном сброса пароля
+        user.resetToken = resetToken;
+        await user.save();
+
+        // Отправка письма со ссылкой на сброс пароля
+        let transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+              user: 'ticketssystem261@gmail.com',
+              pass: 'qfgklrfdzhxrulkd'
+            }
+        });
+
+        let mailOptions = {
+            from: '"Your Name" <your-email@example.com>', // sender address
+            to: email, // list of receivers
+            subject: "Password reset", // Subject line
+            text: `You have requested a password reset. Please follow the link below to reset your password: \n\n 
+            http://localhost:3000/resetpassword/${resetToken} \n\n If you did not request this, please ignore this email.`
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                return console.log(error);
+            }
+            console.log('Message sent: %s', info.messageId);
+        });
+
+        return res.json({ message: 'Instructions have been sent to the email' });
+    } catch (e) {
+        console.log(e);
+        res.status(500).json({ message: 'Error' });
+    }
+}
+
+
   async login(req, res) {
     try {
       const { username, password } = req.body

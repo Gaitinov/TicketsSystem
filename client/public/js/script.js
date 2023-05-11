@@ -148,7 +148,6 @@ document.querySelector('#resetPasswordButton').addEventListener('click', async f
   event.preventDefault();
 
   var forgotPasswordEmail = document.querySelector('#forgotPasswordEmail');
-  var forgotPasswordPassword = document.querySelector('#forgotPasswordPassword');
   var errorMessage = document.querySelector('#errorMessageForgotPassword');
 
   forgotPasswordEmail.classList.remove('is-invalid');
@@ -161,7 +160,6 @@ document.querySelector('#resetPasswordButton').addEventListener('click', async f
     errorMessage.style.display = 'none';
 
     const email = forgotPasswordEmail.value;
-    const password = forgotPasswordPassword.value;
 
     try {
       const response = await fetch('/auth/recoverypassword', {
@@ -169,7 +167,7 @@ document.querySelector('#resetPasswordButton').addEventListener('click', async f
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({email})
       });
 
       if (!response.ok) {

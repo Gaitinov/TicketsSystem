@@ -5,6 +5,7 @@ const authRouter = require('./authRouter');
 const jwt = require('jsonwebtoken');
 const { secret } = require("./config")
 const User = require('./models/User')
+const bcrypt = require('bcryptjs');
 
 const app = express();
 const port = process.env.port || 3000;
@@ -73,27 +74,78 @@ async function connection() {
   app.get('/confirmation/:token', async (req, res) => {
     try {
       const { token } = req.params;
-  
+
       // верификация токена
       const payload = jwt.verify(token, secret);
-  
+
       // поиск пользователя по id из payload'а
       const user = await User.findById(payload.userId);
-  
+
       if (!user) {
         return res.status(400).json({ message: 'Пользователь не найден' });
       }
-  
+
       // подтверждение пользователя
       user.isVerified = true;
       await user.save();
-  
+
       return res.json({ message: 'Электронная почта успешно подтверждена' });
     } catch (e) {
       console.log(e);
       return res.status(400).json({ message: 'Ошибка при подтверждении электронной почты' });
     }
   });
+
+  app.get('/resetpassword/:token', async (req, res) => {
+    try {
+      const { token } = req.params;
+
+      // Проверка токена
+      const payload = jwt.verify(token, secret);
+
+      // Поиск пользователя по id из payload'а
+      const user = await User.findById(payload.userId);
+
+      if (!user) {
+        return res.status(400).json({ message: 'User not found' });
+      }
+
+      // Рендеринг страницы сброса пароля с передачей токена в качестве параметра
+      return res.render('resetpassword', { token: token });
+    } catch (e) {
+      console.log(e);
+      return res.status(400).json({ message: 'Error when resetting password' });
+    }
+  });
+
+  app.post('/resetpassword/:token', async (req, res) => {
+    try {
+      const { token } = req.params;
+      const { password } = req.body;
+
+      // Проверка токена
+      const payload = jwt.verify(token, secret);
+
+      // Поиск пользователя по id из payload'а
+      const user = await User.findById(payload.userId);
+
+      if (!user) {
+        return res.status(400).json({ message: 'User not found' });
+      }
+
+      // Обновление пароля пользователя
+      const hashPassword = bcrypt.hashSync(password, 7);
+      user.password = hashPassword;
+      await user.save();
+
+      return res.json({ message: 'Password has been reset' });
+    } catch (e) {
+      console.log(e);
+      return res.status(400).json({ message: 'Error resetting password' });
+    }
+  });
+
+
 
 }
 
