@@ -62,27 +62,30 @@ document.querySelector('#loginButton1').addEventListener('click', async function
 
 $(document).ready(function() {
   $("#forgotPasswordLink").click(function(event) {
-    event.preventDefault(); // Предотвращаем переход по ссылке
+    event.preventDefault(); 
 
-    // Скрываем форму входа и сообщения об ошибке для формы входа
     $("#loginForm").hide();
     $("#errorMessagelog").hide();
+    $("#loginModalLabel").hide();
 
-    // Отображаем форму сброса пароля и скрываем сообщения об ошибке для формы сброса пароля
     $("#forgotPasswordForm").show();
     $("#errorMessageForgotPassword").hide();
+    
+    $("#ResetpasswordLabel").show();
   });
 
   $("#loginModal").on("hidden.bs.modal", function() {
-    // При закрытии модального окна скрываем форму сброса пароля и сообщения об ошибке для формы сброса пароля
     $("#forgotPasswordForm").hide();
     $("#errorMessageForgotPassword").hide();
 
-    // Отображаем форму входа и скрываем сообщения об ошибке для формы входа
     $("#loginForm").show();
     $("#errorMessagelog").hide();
+  
+    $("#ResetpasswordLabel").hide();
+    $("#loginModalLabel").show();
   });
 });
+
 
 document.querySelector('#registorButton1').addEventListener('click', async function (event) {
   event.preventDefault();
