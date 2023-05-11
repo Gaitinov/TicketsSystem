@@ -152,7 +152,6 @@ document.querySelector('#resetPasswordButton').addEventListener('click', async f
   var errorMessage = document.querySelector('#errorMessageForgotPassword');
 
   forgotPasswordEmail.classList.remove('is-invalid');
-  forgotPasswordPassword.classList.remove('is-invalid');
 
   if (!forgotPasswordEmail.value || !/^[^@]+@[^@]+\.[^@]+$/.test(forgotPasswordEmail.value)) {
     errorMessage.innerHTML = 'Please enter a valid email address';
