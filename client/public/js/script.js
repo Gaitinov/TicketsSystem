@@ -86,7 +86,6 @@ $(document).ready(function() {
   });
 });
 
-
 document.querySelector('#registorButton1').addEventListener('click', async function (event) {
   event.preventDefault();
 
@@ -159,10 +158,6 @@ document.querySelector('#resetPasswordButton').addEventListener('click', async f
     errorMessage.innerHTML = 'Please enter a valid email address';
     errorMessage.style.display = 'block';
     forgotPasswordEmail.classList.add('is-invalid');
-  } else if (!forgotPasswordPassword.value) {
-    errorMessage.innerHTML = 'Please enter a new password';
-    errorMessage.style.display = 'block';
-    forgotPasswordPassword.classList.add('is-invalid');
   } else {
     errorMessage.style.display = 'none';
 
