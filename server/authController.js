@@ -265,6 +265,10 @@ class authController {
         );
       }
 
+      // Добавляем сообщение к тикету и сохраняем
+      ticket.messages.push(newMessage);
+      await ticket.save();
+
       if (!isAdmin) {
         const messageSenders = ticket.messages
           .filter(message => message.sender.toString() !== userId && message.sender.toString() !== ticket.author.toString())
@@ -278,11 +282,6 @@ class authController {
           );
         }
       }
-
-
-      // Добавляем сообщение к тикету и сохраняем
-      ticket.messages.push(newMessage);
-      await ticket.save();
 
       res.json({ message: "Сообщение добавлено", data: ticket });
     } catch (e) {
@@ -346,10 +345,12 @@ class authController {
   }
 
 
-  async openTicket(req, res) {
+  openTicket = async (req, res) => {
     try {
       const ticketId = req.params.id;
       const ticket = await Ticket.findById(ticketId);
+      const userId = req.user.id;
+      const isAdmin = req.user.roles.includes('ADMIN');
 
       if (!ticket) {
         return res.status(404).json({ message: `Тикет не найден` });
@@ -360,6 +361,22 @@ class authController {
       if (ticket.author.toString() === req.user.id) { // проверяем, что текущий пользователь является автором тикета
         ticket.status = 'open';
         await ticket.save();
+
+        if (!isAdmin) {
+          const messageSenders = ticket.messages
+            .filter(message => message.sender.toString() !== userId && message.sender.toString() !== ticket.author.toString())
+            .map(message => message.sender.toString());
+          const uniqueMessageSenders = [...new Set(messageSenders)];
+          for (const sender of uniqueMessageSenders) {
+            await this.addAdminNotificationToUser(
+              sender,
+              ticket._id,
+              `Пользователь ${ticket.authorUsername} заново открыл тикет`
+            );
+          }
+        }
+
+
         res.json({ message: "Тикет открыт", data: ticket });
       } else {
         res.status(403).json({ message: "Вы не можете открыть этот тикет: вы не являетесь автором" });
