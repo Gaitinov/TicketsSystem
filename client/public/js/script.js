@@ -35,13 +35,20 @@ document.querySelector('#loginButton1').addEventListener('click', async function
       const data = await response.json();
       console.log(data);
 
-      if (data.token) {
-        localStorage.setItem('token', data.token);
-        const token = localStorage.getItem('token');
-        console.log(token);
-        location.reload();
+      if (response.ok) {
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+          const token = localStorage.getItem('token');
+          console.log(token);
+          location.reload();
+        } else {
+          errorMessage.innerHTML = 'Incorrect username or password';
+          errorMessage.style.display = 'block';
+          loginUsername.classList.add('is-invalid');
+          loginPassword.classList.add('is-invalid');
+        }
       } else {
-        errorMessage.innerHTML = 'Incorrect username or password';
+        errorMessage.innerHTML = data.message;
         errorMessage.style.display = 'block';
         loginUsername.classList.add('is-invalid');
         loginPassword.classList.add('is-invalid');

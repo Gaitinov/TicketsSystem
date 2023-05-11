@@ -3,6 +3,7 @@ const Role = require('./models/Role')
 const Ticket = require('./models/Ticket');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const nodemailer = require("nodemailer");
 const { validationResult } = require('express-validator')
 const { secret } = require("./config")
 
@@ -35,9 +36,36 @@ class authController {
 
       const hashPassword = bcrypt.hashSync(password, 7);
       const userRole = await Role.findOne({ value: "USER" })
-      const user = new User({ username, email, password: hashPassword, roles: [userRole.value] })
+      const user = new User({ username, email, password: hashPassword, roles: [userRole.value], isVerified: false })
+
+      // Генерация токена подтверждения
+      const emailToken = jwt.sign({ userId: user.id }, secret, { expiresIn: '1h' });
+
+      let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: 'ticketssystem261@gmail.com',
+          pass: 'qfgklrfdzhxrulkd'
+        }
+      });
+
+      let mailOptions = {
+        from: '"Your Name" <your-email@example.com>', // sender address
+        to: email, // list of receivers
+        subject: "Email Confirmation", // Subject line
+        text: `Hello, ${username}, please confirm your email by clicking on the following link: \n\n 
+        http://localhost:3000/confirmation/${emailToken} \n\n If you did not request this, please ignore this email.`
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          return console.log(error);
+        }
+        console.log('Message sent: %s', info.messageId);
+      });
+
       await user.save()
-      return res.json({ message: "Пользователь успешно зарегистрирован" })
+      return res.json({ message: "Пожалуйста, проверьте свою почту, чтобы подтвердить регистрацию" })
     } catch (e) {
       console.log(e)
       res.status(400).json({ message: 'Ошибка при регистрации' })
@@ -49,11 +77,16 @@ class authController {
       const { username, password } = req.body
       const user = await User.findOne({ username })
       if (!user) {
-        return res.status(400).json({ message: `Пользователь ${username} не найден` })
+        return res.status(400).json({ message: `Введен неверный логин или пароль` })
       }
+
+      if (!user.isVerified) {
+        return res.status(400).json({ message: `Пожалуйста, подтвердите свой адрес электронной почты` })
+      }
+
       const validPassword = bcrypt.compareSync(password, user.password)
       if (!validPassword) {
-        return res.status(400).json({ message: `Введен неверный пароль` })
+        return res.status(400).json({ message: `Введен неверный логин или пароль` })
       }
       const token = generateAccessToken(user._id, user.roles)
       return res.json({ token })
@@ -327,7 +360,7 @@ class authController {
       if (isAdmin) {
         ticket.status = 'closed';
         await ticket.save();
-      
+
         await this.addAdminNotificationToUser(
           ticket.author,
           ticket._id,

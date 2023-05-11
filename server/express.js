@@ -2,6 +2,9 @@ const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const authRouter = require('./authRouter');
+const jwt = require('jsonwebtoken');
+const { secret } = require("./config")
+const User = require('./models/User')
 
 const app = express();
 const port = process.env.port || 3000;
@@ -66,10 +69,36 @@ async function connection() {
   } catch (error) {
     console.log('Error!');
   }
+
+  app.get('/confirmation/:token', async (req, res) => {
+    try {
+      const { token } = req.params;
+  
+      // верификация токена
+      const payload = jwt.verify(token, secret);
+  
+      // поиск пользователя по id из payload'а
+      const user = await User.findById(payload.userId);
+  
+      if (!user) {
+        return res.status(400).json({ message: 'Пользователь не найден' });
+      }
+  
+      // подтверждение пользователя
+      user.isVerified = true;
+      await user.save();
+  
+      return res.json({ message: 'Электронная почта успешно подтверждена' });
+    } catch (e) {
+      console.log(e);
+      return res.status(400).json({ message: 'Ошибка при подтверждении электронной почты' });
+    }
+  });
+
 }
 
 connection();
 
 app.listen(port, () => {
-  console.log(`Server is listening on port ${port}`);
+  console.log(`http://localhost:${port}`);
 });
