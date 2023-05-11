@@ -16,6 +16,8 @@ app.use('/auth', authRouter);
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '..', 'client', 'views'));
+app.use('/page/img', express.static(path.join(__dirname, '..', 'client', 'public', 'img')));
+
 
 async function connection() {
   try {
