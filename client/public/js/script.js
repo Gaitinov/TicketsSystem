@@ -60,10 +60,29 @@ document.querySelector('#loginButton1').addEventListener('click', async function
 });
 
 
+$(document).ready(function() {
+  $("#forgotPasswordLink").click(function(event) {
+    event.preventDefault(); // Предотвращаем переход по ссылке
 
+    // Скрываем форму входа и сообщения об ошибке для формы входа
+    $("#loginForm").hide();
+    $("#errorMessagelog").hide();
 
+    // Отображаем форму сброса пароля и скрываем сообщения об ошибке для формы сброса пароля
+    $("#forgotPasswordForm").show();
+    $("#errorMessageForgotPassword").hide();
+  });
 
+  $("#loginModal").on("hidden.bs.modal", function() {
+    // При закрытии модального окна скрываем форму сброса пароля и сообщения об ошибке для формы сброса пароля
+    $("#forgotPasswordForm").hide();
+    $("#errorMessageForgotPassword").hide();
 
+    // Отображаем форму входа и скрываем сообщения об ошибке для формы входа
+    $("#loginForm").show();
+    $("#errorMessagelog").hide();
+  });
+});
 
 document.querySelector('#registorButton1').addEventListener('click', async function (event) {
   event.preventDefault();
@@ -115,6 +134,50 @@ document.querySelector('#registorButton1').addEventListener('click', async funct
 
       const data = await response.json();
       location.reload();
+    } catch (error) {
+      errorMessage.innerHTML = error.message;
+      errorMessage.style.display = 'block';
+    }
+  }
+});
+
+
+// Ваш существующий JavaScript-код
+
+// Обработчик события для кнопки восстановления пароля
+document.querySelector('#resetPasswordButton').addEventListener('click', async function (event) {
+  event.preventDefault();
+
+  var forgotPasswordEmail = document.querySelector('#forgotPasswordEmail');
+  var errorMessage = document.querySelector('#errorMessageForgotPassword');
+
+  forgotPasswordEmail.classList.remove('is-invalid');
+
+  if (!forgotPasswordEmail.value || !/^[^@]+@[^@]+\.[^@]+$/.test(forgotPasswordEmail.value)) {
+    errorMessage.innerHTML = 'Please enter a valid email address';
+    errorMessage.style.display = 'block';
+    forgotPasswordEmail.classList.add('is-invalid');
+  } else {
+    errorMessage.style.display = 'none';
+
+    const email = forgotPasswordEmail.value;
+
+    try {
+      const response = await fetch('/auth/forgot-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message);
+      }
+
+      const data = await response.json();
+      alert("Инструкции отправлены на почту")
     } catch (error) {
       errorMessage.innerHTML = error.message;
       errorMessage.style.display = 'block';
