@@ -145,33 +145,37 @@ document.querySelector('#registorButton1').addEventListener('click', async funct
 });
 
 
-// Ваш существующий JavaScript-код
-
-// Обработчик события для кнопки восстановления пароля
 document.querySelector('#resetPasswordButton').addEventListener('click', async function (event) {
   event.preventDefault();
 
   var forgotPasswordEmail = document.querySelector('#forgotPasswordEmail');
+  var forgotPasswordPassword = document.querySelector('#forgotPasswordPassword');
   var errorMessage = document.querySelector('#errorMessageForgotPassword');
 
   forgotPasswordEmail.classList.remove('is-invalid');
+  forgotPasswordPassword.classList.remove('is-invalid');
 
   if (!forgotPasswordEmail.value || !/^[^@]+@[^@]+\.[^@]+$/.test(forgotPasswordEmail.value)) {
     errorMessage.innerHTML = 'Please enter a valid email address';
     errorMessage.style.display = 'block';
     forgotPasswordEmail.classList.add('is-invalid');
+  } else if (!forgotPasswordPassword.value) {
+    errorMessage.innerHTML = 'Please enter a new password';
+    errorMessage.style.display = 'block';
+    forgotPasswordPassword.classList.add('is-invalid');
   } else {
     errorMessage.style.display = 'none';
 
     const email = forgotPasswordEmail.value;
+    const password = forgotPasswordPassword.value;
 
     try {
-      const response = await fetch('/auth/forgot-password', {
+      const response = await fetch('/auth/recoverypassword', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ email, password })
       });
 
       if (!response.ok) {
@@ -180,7 +184,7 @@ document.querySelector('#resetPasswordButton').addEventListener('click', async f
       }
 
       const data = await response.json();
-      alert("Инструкции отправлены на почту")
+      alert("Инструкции отправлены на почту");
     } catch (error) {
       errorMessage.innerHTML = error.message;
       errorMessage.style.display = 'block';
