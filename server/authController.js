@@ -50,7 +50,7 @@ class authController {
       });
 
       let mailOptions = {
-        from: '"Your Name" <your-email@example.com>', // sender address
+        from: '"TicketsSystem" <your-email@example.com>', // sender address
         to: email, // list of receivers
         subject: "Email Confirmation", // Subject line
         text: `Hello, ${username}, please confirm your email by clicking on the following link: \n\n 
@@ -99,7 +99,7 @@ class authController {
         });
 
         let mailOptions = {
-            from: '"Your Name" <your-email@example.com>', // sender address
+            from: '"TicketsSystem" <your-email@example.com>', // sender address
             to: email, // list of receivers
             subject: "Password reset", // Subject line
             text: `You have requested a password reset. Please follow the link below to reset your password: \n\n 

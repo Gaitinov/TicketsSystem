@@ -1,0 +1,94 @@
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a id="unique-link" class="navbar-brand">Support Ticketing System</a>
+        <li class="nav-item navbar-text ml-auto d-lg-none pr-1">
+            <a class="notify-linkclass" data-toggle="popover">
+                <i class="fa fa-bell"></i> <span class="badge badge-pill badge-primary"></span>
+                <img class="imagenotify  mx-auto" src="img/notification.png" alt="Centered image"></a>
+        </li>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+
+
+
+
+            <ul class="navbar-nav ml-auto d-lg-none">
+                <li class="nav-item p-1">
+                    <a id="loginButton" class="btn btn-outline-primary btn-block" data-toggle="modal"
+                        data-target="#loginModalTelephone">Login</a>
+                </li>
+                <li class="nav-item p-1 ">
+                    <a id="registerButton" class="btn btn-outline-dark btn-block" data-toggle="modal"
+                        data-target="#registerModalTelephone">Register</a>
+                </li>
+            </ul>
+
+            <ul class="navbar-nav mr-auto d-lg-none">
+                <li class="nav-item">
+                    <a class="nav-link text-center font-weight-bold d-none " data-toggle="modal"
+                        id="userNicknameTelephone" data-target="#nicknameTelephone">Nickname</a>
+                </li>
+                <li class="nav-item" id="linkitemli">
+                    <a class="nav-link text-center" onclick="updateHash('main')" data-hash="main" data-toggle="collapse"
+                        data-target="#navbarNav">Home</a>
+                </li>
+                <li class="nav-item admin-only d-none" id="linkitemli">
+                    <a class="nav-link text-center " onclick="updateHash('viewtickets')" data-hash="viewtickets"
+                        data-toggle="collapse" data-target="#navbarNav">View Tickets</a>
+                </li>
+                <li class="nav-item" id="linkitemli1">
+                    <a class="nav-link text-center d-none" onclick="updateHash('createticket')" data-hash="createticket"
+                        data-toggle="collapse" data-target="#navbarNav">Submit a Ticket</a>
+                </li>
+                <li class="nav-item p-1 ">
+                    <a class="nav-link text-center d-none" data-toggle="modal" data-target="#logouttelephone">Logout</a>
+                </li>
+            </ul>
+
+
+            <ul class="navbar-nav mr-auto d-none d-lg-flex">
+                <li class="nav-item" id="linkitemli">
+                    <a class="nav-link" onclick="updateHash('main')" data-hash="main">Home</a>
+                </li>
+                <li class="nav-item admin-only d-none" id="linkitemli">
+                    <a class="nav-link" onclick="updateHash('viewtickets')" data-hash="viewtickets">View Tickets</a>
+                </li>
+                <li class="nav-item d-none" id="linkitemli2">
+                    <a class="nav-link" onclick="updateHash('createticket')" data-hash="createticket">Submit a
+                        Ticket</a>
+                </li>
+            </ul>
+
+
+            <ul class="navbar-nav ml-auto d-none d-lg-flex">
+                <!-- This will hide the elements on screens smaller than large (lg) and display them on large screens -->
+
+                <li class="nav-item navbar-text">
+                    <a class="notify-linkclass" data-toggle="popover">
+                        <i class="fa fa-bell"></i> <span class="badge badge-pill badge-primary"></span>
+                        <img class="imagenotify"  mx-auto" src="img/notification.png" alt="Centered image">
+                    </a>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Account
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+                        <a class="dropdown-item" data-toggle="modal" data-target="#loginModal">Login</a>
+                        <a class="dropdown-item" data-toggle="modal" data-target="#registerModal">Register</a>
+                        <a class="dropdown-item d-none font-weight-bold" data-toggle="modal" id="userNickname"
+                            data-target="#nickname">Nickname</a>
+                        <a class="dropdown-item d-none" data-toggle="modal" data-target="#logout">Logout</a>
+                    </div>
+                </li>
+            </ul>
+
+
+
+        </div>
+    </nav>

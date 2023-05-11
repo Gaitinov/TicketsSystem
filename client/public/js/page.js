@@ -92,10 +92,11 @@ window.addEventListener('DOMContentLoaded', async () => {
               This ticket has been closed.
             </div>
           `;
-          ticketContainer.insertAdjacentHTML('afterend', closedAlert);
-
+          
           const submitContainer = document.getElementById('Containesubmit');
+          submitContainer.insertAdjacentHTML('beforebegin', closedAlert);
           submitContainer.classList.add('d-none');
+          
           const openTicketbutton = document.getElementById('open-ticket');
           openTicketbutton.classList.remove('d-none');
         }
