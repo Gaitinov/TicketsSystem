@@ -177,26 +177,7 @@ document.querySelector('#resetPasswordButton').addEventListener('click', async f
 
       const data = await response.json();
 
-      $(document).ready(function () {
-
-        $('#loginModal').modal('hide');
-
-        $("#forgotPasswordForm").hide();
-        $("#errorMessageForgotPassword").hide();
-
-        $("#errorMessagelog").hide();
-
-        $("#ResetpasswordLabel").hide();
-        const pnotification = document.querySelector('#notificationmodalwindow');
-        pnotification.innerHTML = 'Инструкция отправлена на почту';
-
-        $('#popup').modal('show');
-
-
-        $('#close-popup').click(function () {
-          $('#popup').modal('hide');
-        });
-      });
+      showModalWithMessage('Инструкция отправлена на почту');
 
 
     } catch (error) {
@@ -339,7 +320,9 @@ async function attachSubmitButtonListener() {
       const strippedContent = description.replace(/(<([^>]+)>)/gi, "").replace(/&nbsp;/g, ' ');
 
       if (!strippedTitle.trim() || !strippedContent.trim()) {
-        alert('Пожалуйста, заполните все поля');
+
+        showModalWithMessage('Пожалуйста, заполните все поля');
+
         return;
       }
 
@@ -360,9 +343,12 @@ async function attachSubmitButtonListener() {
         });
 
         if (response.ok) {
-          // Тикет успешно создан
-          alert('Тикет создан');
-          location.reload();
+          showModalWithMessage('Тикет создан');
+
+          $('#close-popup').click(function () {
+            $('#popup').modal('hide');
+            location.reload();
+          });
 
           // Очистка полей после успешного создания тикета
           document.getElementById('subject').value = '';
@@ -372,9 +358,9 @@ async function attachSubmitButtonListener() {
           // Произошла ошибка при создании тикета
           const errorData = await response.json();
           if (errorData.message === 'Вы не можете создать больше 3 открытых тикетов') {
-            alert('Вы не можете создать больше 3 открытых тикетов');
+            showModalWithMessage('Вы не можете создать больше 3 открытых тикетов');
           } else {
-            alert('Ошибка при создании тикета');
+            showModalWithMessage('Ошибка при создании тикета');
           }
         }
       } catch (error) {
@@ -836,3 +822,23 @@ async function deleteNotification(notificationId) {
   }
 }
 
+function showModalWithMessage(message) {
+  $(document).ready(function () {
+    $('#loginModal').modal('hide');
+
+    $("#forgotPasswordForm").hide();
+    $("#errorMessageForgotPassword").hide();
+
+    $("#errorMessagelog").hide();
+
+    $("#ResetpasswordLabel").hide();
+    const pnotification = document.querySelector('#notificationmodalwindow');
+    pnotification.innerHTML = message;
+
+    $('#popup').modal('show');
+
+    $('#close-popup').click(function () {
+      $('#popup').modal('hide');
+    });
+  });
+}

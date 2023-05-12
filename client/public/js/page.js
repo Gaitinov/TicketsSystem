@@ -139,7 +139,7 @@ window.addEventListener('DOMContentLoaded', async () => {
           location.reload();
         } else if (response.status === 400) {
           const data = await response.json();
-          alert(data.message);
+          showModalWithMessage(data.message);
         } else {
           console.error('Ошибка отправки сообщения:', response.statusText);
         }
@@ -147,7 +147,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         console.error('Ошибка при отправке сообщения:', error);
       }
     } else {
-      alert('Пожалуйста, введите ваше сообщение');
+      showModalWithMessage('Пожалуйста, введите ваше сообщение');
     }
   });
 
@@ -224,5 +224,26 @@ function initializeEditor() {
 
     // Close the modal
     $('#closeModal').modal('hide');
+  });
+}
+
+function showModalWithMessage(message) {
+  $(document).ready(function () {
+    $('#loginModal').modal('hide');
+
+    $("#forgotPasswordForm").hide();
+    $("#errorMessageForgotPassword").hide();
+
+    $("#errorMessagelog").hide();
+
+    $("#ResetpasswordLabel").hide();
+    const pnotification = document.querySelector('#notificationmodalwindow');
+    pnotification.innerHTML = message;
+
+    $('#popup').modal('show');
+
+    $('#close-popup').click(function () {
+      $('#popup').modal('hide');
+    });
   });
 }

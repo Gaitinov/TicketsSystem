@@ -176,7 +176,7 @@ document.querySelector('#loginButton1').addEventListener('click', async function
         }
   
         const data = await response.json();
-        alert("Инструкции отправлены на почту");
+        showModalWithMessage('Инструкция отправлена на почту');
       } catch (error) {
         errorMessage.innerHTML = error.message;
         errorMessage.style.display = 'block';
@@ -281,7 +281,7 @@ document.querySelector('#loginButton1').addEventListener('click', async function
         const strippedContent = description.replace(/(<([^>]+)>)/gi, "").replace(/&nbsp;/g, ' ');
   
         if (!strippedTitle.trim() || !strippedContent.trim()) {
-          alert('Пожалуйста, заполните все поля');
+          showModalWithMessage('Пожалуйста, заполните все поля');
           return;
         }
   
@@ -303,8 +303,12 @@ document.querySelector('#loginButton1').addEventListener('click', async function
   
           if (response.ok) {
             // Тикет успешно создан
-            alert('Тикет создан');
+            showModalWithMessage('Тикет создан');
+
+          $('#close-popup').click(function () {
+            $('#popup').modal('hide');
             location.reload();
+          });
   
             // Очистка полей после успешного создания тикета
             document.getElementById('subject').value = '';
@@ -314,9 +318,9 @@ document.querySelector('#loginButton1').addEventListener('click', async function
             // Произошла ошибка при создании тикета
             const errorData = await response.json();
             if (errorData.message === 'Вы не можете создать больше 3 открытых тикетов') {
-              alert('Вы не можете создать больше 3 открытых тикетов');
+              showModalWithMessage('Вы не можете создать больше 3 открытых тикетов');
             } else {
-              alert('Ошибка при создании тикета');
+              showModalWithMessage('Ошибка при создании тикета');
             }
           }
         } catch (error) {
@@ -737,3 +741,23 @@ document.querySelector('#loginButton1').addEventListener('click', async function
   }
   
   
+  function showModalWithMessage(message) {
+    $(document).ready(function () {
+      $('#loginModal').modal('hide');
+  
+      $("#forgotPasswordForm").hide();
+      $("#errorMessageForgotPassword").hide();
+  
+      $("#errorMessagelog").hide();
+  
+      $("#ResetpasswordLabel").hide();
+      const pnotification = document.querySelector('#notificationmodalwindow');
+      pnotification.innerHTML = message;
+  
+      $('#popup').modal('show');
+  
+      $('#close-popup').click(function () {
+        $('#popup').modal('hide');
+      });
+    });
+  }

@@ -5,7 +5,7 @@ document.querySelector('#resetPasswordForm').addEventListener('submit', async fu
     const confirmPassword = document.querySelector('#confirmPassword').value;
   
     if (password !== confirmPassword) {
-      alert('Пароли не совпадают!');
+      showModalWithMessage('Пароли не совпадают!');
       return;
     }
   
@@ -27,9 +27,35 @@ document.querySelector('#resetPasswordForm').addEventListener('submit', async fu
       }
   
       const data = await response.json();
-      alert("Пароль успешно сброшен");
-      window.location.href = "/#main"; // перенаправление на страницу входа после успешного сброса пароля
+      showModalWithMessage('Пароль успешно сброшен');
+
+          $('#close-popup').click(function () {
+            $('#popup').modal('hide');
+            window.location.href = "/#main";
+          });
+
     } catch (error) {
       console.log(error.message);
     }
   });
+
+  function showModalWithMessage(message) {
+    $(document).ready(function () {
+      $('#loginModal').modal('hide');
+  
+      $("#forgotPasswordForm").hide();
+      $("#errorMessageForgotPassword").hide();
+  
+      $("#errorMessagelog").hide();
+  
+      $("#ResetpasswordLabel").hide();
+      const pnotification = document.querySelector('#notificationmodalwindow');
+      pnotification.innerHTML = message;
+  
+      $('#popup').modal('show');
+  
+      $('#close-popup').click(function () {
+        $('#popup').modal('hide');
+      });
+    });
+  }
