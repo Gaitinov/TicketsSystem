@@ -568,9 +568,6 @@ document.querySelector('#loginButton1').addEventListener('click', async function
                         </a>
                         <p class="card-text">Date: ${formattedDate}</p>
                       </div>
-                      <div id="themediv" class="card-body">
-                        <img class="imagesized d-block mx-auto" src="img/loced.png" alt="Centered image">
-                      </div>
                     </div>
                   </div>
                 `;
@@ -628,9 +625,6 @@ document.querySelector('#loginButton1').addEventListener('click', async function
                           </h5>
                         </a>
                         <p class="card-text">Date: ${formattedDate}</p>
-                      </div>
-                      <div id="themediv" class="card-body">
-                        <img class="imagesized d-block mx-auto" src="img/loced.png" alt="Centered image">
                       </div>
                     </div>
                   </div>

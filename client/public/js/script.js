@@ -650,9 +650,6 @@ async function loadAllTickets(page = 1, limit = 10, search = '', searchBy = '', 
                       </a>
                       <p class="card-text">Date: ${formattedDate}</p>
                     </div>
-                    <div id="themediv" class="card-body">
-                      <img class="imagesized d-block mx-auto" src="img/loced.png" alt="Centered image">
-                    </div>
                   </div>
                 </div>
               `;
@@ -710,9 +707,6 @@ async function loadUserData() {
                         </h5>
                       </a>
                       <p class="card-text">Date: ${formattedDate}</p>
-                    </div>
-                    <div id="themediv" class="card-body">
-                      <img class="imagesized d-block mx-auto" src="img/loced.png" alt="Centered image">
                     </div>
                   </div>
                 </div>
