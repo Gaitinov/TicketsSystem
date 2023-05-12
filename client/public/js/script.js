@@ -60,9 +60,9 @@ document.querySelector('#loginButton1').addEventListener('click', async function
 });
 
 
-$(document).ready(function() {
-  $("#forgotPasswordLink").click(function(event) {
-    event.preventDefault(); 
+$(document).ready(function () {
+  $("#forgotPasswordLink").click(function (event) {
+    event.preventDefault();
 
     $("#loginForm").hide();
     $("#errorMessagelog").hide();
@@ -70,17 +70,17 @@ $(document).ready(function() {
 
     $("#forgotPasswordForm").show();
     $("#errorMessageForgotPassword").hide();
-    
+
     $("#ResetpasswordLabel").show();
   });
 
-  $("#loginModal").on("hidden.bs.modal", function() {
+  $("#loginModal").on("hidden.bs.modal", function () {
     $("#forgotPasswordForm").hide();
     $("#errorMessageForgotPassword").hide();
 
     $("#loginForm").show();
     $("#errorMessagelog").hide();
-  
+
     $("#ResetpasswordLabel").hide();
     $("#loginModalLabel").show();
   });
@@ -167,7 +167,7 @@ document.querySelector('#resetPasswordButton').addEventListener('click', async f
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({email})
+        body: JSON.stringify({ email })
       });
 
       if (!response.ok) {
@@ -176,7 +176,29 @@ document.querySelector('#resetPasswordButton').addEventListener('click', async f
       }
 
       const data = await response.json();
-      alert("Инструкции отправлены на почту");
+
+      $(document).ready(function () {
+
+        $('#loginModal').modal('hide');
+
+        $("#forgotPasswordForm").hide();
+        $("#errorMessageForgotPassword").hide();
+
+        $("#errorMessagelog").hide();
+
+        $("#ResetpasswordLabel").hide();
+        const pnotification = document.querySelector('#notificationmodalwindow');
+        pnotification.innerHTML = 'Инструкция отправлена на почту';
+
+        $('#popup').modal('show');
+
+
+        $('#close-popup').click(function () {
+          $('#popup').modal('hide');
+        });
+      });
+
+
     } catch (error) {
       errorMessage.innerHTML = error.message;
       errorMessage.style.display = 'block';
@@ -527,7 +549,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         const unreadNotificationsCount = data.notifications.filter(
           (notification) => !notification.isRead
         ).length;
-        
+
         const notifyLinks = document.querySelectorAll('.notify-linkclass');
         notifyLinks.forEach((notifyLink) => {
           const notifyBadge = notifyLink.querySelector('.badge.badge-pill.badge-primary');
@@ -539,11 +561,11 @@ window.addEventListener('DOMContentLoaded', async () => {
             }
           }
         });
-        
+
         const notificationsContent = data.notifications
           .map(notification => notificationToCard(notification))
           .join('');
-        
+
 
         createPopoverWithContent(notificationsContent);
 
