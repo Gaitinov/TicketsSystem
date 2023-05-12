@@ -84,15 +84,18 @@ async function connection() {
       const user = await User.findById(payload.userId);
 
       if (!user) {
-        return res.status(400).json({ message: 'Пользователь не найден' });
+        return res.status(400).render('error', { message: 'Пользователь не найден' });
       }
 
       // подтверждение пользователя
       user.isVerified = true;
       await user.save();
 
-      return res.json({ message: 'Электронная почта успешно подтверждена' });
-    } catch (e) {
+      const authToken = generateAccessToken(user._id, user.roles);
+
+    const message = 'Электронная почта успешно подтверждена';
+    return res.render('confirmation', { token: authToken, message });
+  } catch (e) {
       console.log(e);
       return res.status(400).json({ message: 'Ошибка при подтверждении электронной почты' });
     }
@@ -152,6 +155,14 @@ async function connection() {
 }
 
 connection();
+
+const generateAccessToken = (id, roles) => {
+  const payload = {
+    id,
+    roles
+  }
+  return jwt.sign(payload, secret, { expiresIn: "24h" })
+}
 
 app.listen(port, () => {
   console.log(`http://localhost:${port}`);
