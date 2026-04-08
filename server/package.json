@@ -7,7 +7,7 @@
     "express": "^4.22.1",
     "express-handlebars": "^6.0.7",
     "express-validator": "^6.15.0",
-    "handlebars": "^4.7.7",
+    "handlebars": "^4.7.9",
     "jsonwebtoken": "^9.0.0",
     "mongodb": "^5.0.1",
     "mongoose": "^7.8.4",
