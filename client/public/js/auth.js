@@ -345,8 +345,6 @@ document.querySelector('#loginButton1').addEventListener('click', async function
   
   
   window.onload = function () {
-  
-    // Check if token exists in local storage
     const token = localStorage.getItem('token');
     if (token) {
       const loginButton = document.querySelector(`a[data-target='#loginModal']`);

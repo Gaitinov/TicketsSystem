@@ -217,12 +217,7 @@ function initializeEditor() {
     width: '100%',
   });
 
-  // Confirm close action
   $('#confirmClose').click(function () {
-    // Your code to close the topic goes here
-    console.log('Topic closed');
-
-    // Close the modal
     $('#closeModal').modal('hide');
   });
 }

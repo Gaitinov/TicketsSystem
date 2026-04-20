@@ -1,17 +1,15 @@
 {
   "dependencies": {
-    "assert": "^2.0.0",
-    "bcrypt": "^6.0.0",
     "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
     "express": "^4.22.1",
-    "express-handlebars": "^6.0.7",
     "express-validator": "^6.15.0",
-    "handlebars": "^4.7.9",
     "jsonwebtoken": "^9.0.0",
-    "mongodb": "^5.0.1",
     "mongoose": "^7.8.4",
-    "nodemailer": "^8.0.5",
+    "nodemailer": "^8.0.5"
+  },
+  "devDependencies": {
     "nodemon": "^3.1.11"
   },
   "scripts": {

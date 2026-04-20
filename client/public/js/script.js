@@ -83,7 +83,46 @@ $(document).ready(function () {
 
     $("#ResetpasswordLabel").hide();
     $("#loginModalLabel").show();
+    $("#resendConfirmationForm").hide();
   });
+
+  $("#resendConfirmationLink").click(function (event) {
+    event.preventDefault();
+    $("#loginForm").hide();
+    $("#resendConfirmationForm").show();
+    $("#loginModalLabel").text("Resend");
+  });
+});
+
+document.querySelector('#resendConfirmButton').addEventListener('click', async function (event) {
+  event.preventDefault();
+  const email = document.querySelector('#resendEmail').value;
+  const errorMessage = document.querySelector('#errorMessagelog');
+
+  if (!email) {
+    errorMessage.innerHTML = 'Please enter your email';
+    errorMessage.style.display = 'block';
+    return;
+  }
+
+  try {
+    const response = await fetch('/auth/resend-confirmation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      showModalWithMessage('Письмо отправлено повторно');
+      $('#loginModal').modal('hide');
+    } else {
+      errorMessage.innerHTML = data.message;
+      errorMessage.style.display = 'block';
+    }
+  } catch (error) {
+    console.error(error);
+  }
 });
 
 document.querySelector('#registorButton1').addEventListener('click', async function (event) {
@@ -226,7 +265,6 @@ document.querySelectorAll(".link-item a").forEach(link => {
   });
 });
 
-// Добавления контента на страницу от хэша
 async function start() {
   let hash = window.location.hash;
   hash = hash.substring(1);
@@ -404,7 +442,7 @@ window.addEventListener("hashchange", function () {
 
 window.onload = function () {
 
-  // Check if token exists in local storage
+
   const token = localStorage.getItem('token');
   if (token) {
     const loginButton = document.querySelector(`a[data-target='#loginModal']`);

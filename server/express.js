@@ -1,169 +1,71 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
-const authRouter = require('./authRouter');
-const jwt = require('jsonwebtoken');
-const { secret } = require("./config")
-const User = require('./models/User')
-const bcrypt = require('bcryptjs');
+const { mongoUri, port } = require("./config");
+const authController = require('./controllers/authController');
+
+
+const authRouter = require('./routes/authRouter');
+const ticketRouter = require('./routes/ticketRouter');
+const notificationRouter = require('./routes/notificationRouter');
 
 const app = express();
-const port = process.env.port || 3000;
+
 
 app.use(express.static(path.join(__dirname, '..', 'client', 'public')));
 app.use(express.json());
+
+
 app.use('/auth', authRouter);
+app.use('/api/tickets', ticketRouter);
+app.use('/api/notifications', notificationRouter);
+
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '..', 'client', 'views'));
+
+
 app.use('/page/img', express.static(path.join(__dirname, '..', 'client', 'public', 'img')));
 
+app.get('/', (req, res) => res.render('index'));
+app.get('/login', (req, res) => res.render('login'));
+app.get('/registration', (req, res) => res.render('registration'));
+app.get('/main', (req, res) => res.render('main'));
+app.get('/createticket', (req, res) => res.render('createticket'));
+app.get('/viewtickets', (req, res) => res.render('viewtickets'));
 
-async function connection() {
+app.get('/page/:id', function (req, res, next) {
+  const id = req.params.id;
+  res.render('page', { id }, (err, html) => {
+    if (err) return next(err);
+    res.send(html);
+  });
+});
+
+app.get('/confirmation/:token', authController.confirmEmail);
+
+app.get('/resetpassword/:token', (req, res) => res.render('resetpassword', { token: req.params.token }));
+
+
+app.use((err, req, res, next) => {
+  console.error('Global Error:', err.message);
+  res.status(err.status || 500).send(err.message || 'Internal Server Error');
+});
+
+
+async function start() {
   try {
-    await mongoose.connect('mongodb://127.0.0.1:27017/myDatabase', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log(`it works!`);
+    await mongoose.connect(mongoUri);
+    console.log('MongoDB connected successfully!');
 
-    app.get('/', (req, res) => {
-      const page = 'index';
-      res.render(page);
-    });
-
-    app.get('/:page', function (req, res, next) {
-      const page = req.params.page;
-      res.render(
-        page,
-        function (err, html) {
-          if (err) {
-            next(err);
-          } else {
-            res.send(html);
-          }
-        }
-      );
-    });
-
-    app.get('/page/:id', function (req, res, next) {
-      const id = req.params.id;
-      res.render(
-        'page', // имя шаблона страницы
-        { id: id }, // объект данных для передачи в шаблон
-        function (err, html) {
-          if (err) {
-            next(err);
-          } else {
-            res.send(html);
-          }
-        }
-      );
-    });
-
-    app.use(function (err, req, res, next) {
-      if (err) {
-        console.error(err);
-        res.status(404).send('Page not Found');
-      } else {
-        next();
-      }
+    app.listen(port, () => {
+      console.log(`Server is running at http://localhost:${port}`);
     });
   } catch (error) {
-    console.log('Error!');
+    console.error('Failed to connect to MongoDB:', error);
+    process.exit(1);
   }
-
-  app.get('/confirmation/:token', async (req, res) => {
-    try {
-      const { token } = req.params;
-
-      // верификация токена
-      const payload = jwt.verify(token, secret);
-
-      // поиск пользователя по id из payload'а
-      const user = await User.findById(payload.userId);
-
-      if (!user) {
-        return res.status(400).render('error', { message: 'Пользователь не найден' });
-      }
-
-      // подтверждение пользователя
-      user.isVerified = true;
-      await user.save();
-
-      const authToken = generateAccessToken(user._id, user.roles);
-
-    const message = 'Электронная почта успешно подтверждена';
-    return res.render('confirmation', { token: authToken, message });
-  } catch (e) {
-      console.log(e);
-      return res.status(400).json({ message: 'Ошибка при подтверждении электронной почты' });
-    }
-  });
-
-  app.get('/resetpassword/:token', async (req, res) => {
-    try {
-      const { token } = req.params;
-
-      // Проверка токена
-      const payload = jwt.verify(token, secret);
-
-      // Поиск пользователя по id из payload'а
-      const user = await User.findById(payload.userId);
-
-      if (!user) {
-        return res.status(400).json({ message: 'User not found' });
-      }
-
-      // Рендеринг страницы сброса пароля с передачей токена в качестве параметра
-      return res.render('resetpassword', { token: token });
-    } catch (e) {
-      console.log(e);
-      return res.status(400).json({ message: 'Error when resetting password' });
-    }
-  });
-
-  app.post('/resetpassword/:token', async (req, res) => {
-    try {
-      const { token } = req.params;
-      const { password } = req.body;
-
-      // Проверка токена
-      const payload = jwt.verify(token, secret);
-
-      // Поиск пользователя по id из payload'а
-      const user = await User.findById(payload.userId);
-
-      if (!user) {
-        return res.status(400).json({ message: 'User not found' });
-      }
-
-      // Обновление пароля пользователя
-      const hashPassword = bcrypt.hashSync(password, 7);
-      user.password = hashPassword;
-      await user.save();
-
-      return res.json({ message: 'Password has been reset' });
-    } catch (e) {
-      console.log(e);
-      return res.status(400).json({ message: 'Error resetting password' });
-    }
-  });
-
-
-
 }
 
-connection();
-
-const generateAccessToken = (id, roles) => {
-  const payload = {
-    id,
-    roles
-  }
-  return jwt.sign(payload, secret, { expiresIn: "24h" })
-}
-
-app.listen(port, () => {
-  console.log(`http://localhost:${port}`);
-});
+start();
