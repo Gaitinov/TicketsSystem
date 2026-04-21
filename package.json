@@ -1,0 +1,32 @@
+{
+  "name": "tickets-system",
+  "version": "1.0.0",
+  "description": "A simple ticket management system built with Node.js.",
+  "main": "server/express.js",
+  "scripts": {
+    "start": "node server/express.js",
+    "dev": "nodemon server/express.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "tickets",
+    "management",
+    "node",
+    "express"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.22.1",
+    "express-validator": "^6.15.0",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.8.4",
+    "nodemailer": "^8.0.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}

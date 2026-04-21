@@ -19,13 +19,13 @@ A simple ticket management system built with Node.js.
 
 ## Installation
 
-1. Install dependencies (in the `server` folder):
+1. Install dependencies:
    ```bash
    npm install
    ```
 
 2. Configuration:
-   Create a `.env` file in the `server` folder:
+   A `.env` file should be located in the project root:
    ```env
    PORT=3000
    MONGO_URI=mongodb://localhost:27017/tickets
