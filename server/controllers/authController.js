@@ -67,6 +67,10 @@ class AuthController {
 
     async resendConfirmation(req, res, next) {
         try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ message: "Некорректный email", errors: errors.array() });
+            }
             const { email } = req.body;
             if (!email) return res.status(400).json({ message: "Email обязателен" });
 
@@ -143,6 +147,10 @@ class AuthController {
 
     async recoverPassword(req, res, next) {
         try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ message: "Некорректный email", errors: errors.array() });
+            }
             const { email } = req.body;
             const user = await User.findOne({ email });
             if (!user) return res.status(404).json({ message: 'Пользователь не найден' });

@@ -10,10 +10,14 @@ router.post('/registration', [
     check('email', "Некорректный email").isEmail()
 ], controller.registration);
 
-router.post('/resend-confirmation', controller.resendConfirmation);
+router.post('/resend-confirmation', [
+    check('email', "Некорректный email").isEmail()
+], controller.resendConfirmation);
 
 router.post('/login', controller.login);
-router.post('/recoverypassword', controller.recoverPassword);
+router.post('/recoverypassword', [
+    check('email', "Некорректный email").isEmail()
+], controller.recoverPassword);
 router.post('/resetpassword/:token', [
     check('password', "Пароль должен быть больше 4 и меньше 20 символов").isLength({ min: 4, max: 20 })
 ], controller.resetPassword);
